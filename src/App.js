@@ -74,7 +74,7 @@ class App extends Component {
         return (
             <div className="App">
                 <MuiThemeProvider theme={theme}>
-                    <Admin loginPage={LoginPage} theme={theme} title={"Papeleria"} authProvider={authProvider} logoutButton={LogoutButton}>
+                    <Admin loginPage={LoginPage} theme={theme} title={"Instaudio"} authProvider={authProvider} logoutButton={LogoutButton}>
                         <Resource 
                             name="productos" 
                             list={Productos}
