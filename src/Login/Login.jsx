@@ -6,6 +6,8 @@ import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
 import Loader from 'react-loader'
 
+const instadio_logo = require('assets/img/instaudio.png')
+
 // Main app
 class Login extends React.Component {
     constructor(props) {
@@ -101,8 +103,7 @@ class Logo extends React.Component {
     render() {
         return (
             <div className="logo">
-                <i className="fa fa-universal-access" aria-hidden="true"></i> 
-                <span>Papeleria</span>
+                <img src={instadio_logo} width="200" style={{margin : 15}} />
             </div>
         )
     }

@@ -1,4 +1,4 @@
-let HOST = `http://api-papeleria.teknovatemzt.com:8080/index.php`
+let HOST = `http://104.248.214.60/api-admin/index.php`
 
 module.exports = {
     LOGIN : `${HOST}/admin/login`,
