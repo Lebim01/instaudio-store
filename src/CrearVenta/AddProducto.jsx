@@ -72,7 +72,8 @@ class AddProducto extends React.Component {
                     </Tooltip>
                 </TableCell>
                 <TableCell padding={'dense'}>
-                    <img src={image} alt="Imagen" height={200}/>
+                    <img src={image.url} alt="Imagen" height={200}/>
+                    {codigo}
                 </TableCell>
                 <TableCell padding={'dense'}>
                     <TextField
