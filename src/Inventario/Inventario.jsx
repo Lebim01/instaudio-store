@@ -25,6 +25,7 @@ const styles = theme => ({
 });
 
 const columnData = [
+    { id: 'image', numeric: false, disablePadding: false, label: '', sortable : false, filterable : false },
     { id: 'producto', numeric: false, disablePadding: false, label: 'Producto', sortable : true, filterable : true },
     { id: 'ultima_compra', numeric: false, disablePadding: false, label: 'Ultima Compra', sortable : false },
     { id: 'ultima_venta', numeric: false, disablePadding: false, label: 'Ultima Venta', sortable : false },
@@ -74,6 +75,9 @@ class Inventario extends React.Component {
             tabIndex={-1}
             key={props.id}
         >
+            <TableCell >
+                <img src={props.image} alt="Imagen" height={100}/>
+            </TableCell>
             <TableCell >{props.producto}</TableCell>
             <TableCell >{this.dateToFormat(props.ultima_compra)}</TableCell>
             <TableCell >{this.dateToFormat(props.ultima_venta)}</TableCell>

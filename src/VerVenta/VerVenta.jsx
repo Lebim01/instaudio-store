@@ -179,6 +179,7 @@ class VerVenta extends React.Component {
                             <table className="table">
                                 <thead>
                                     <tr>
+                                        <th></th>
                                         <th>Producto</th>
                                         <th>Cantidad</th>
                                         <th>Precio</th>
@@ -188,6 +189,9 @@ class VerVenta extends React.Component {
                                 <tbody>
                                     { data.productos.map((p, i) => 
                                         <tr key={i}>
+                                            <td>
+                                                <img src={p.image} alt="Imagen" height={100}/>
+                                            </td>
                                             <td>{p.nombre}</td>
                                             <td>{p.cantidad}</td>
                                             <td>${p.precio}</td>
