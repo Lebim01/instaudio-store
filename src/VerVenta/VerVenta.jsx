@@ -192,7 +192,7 @@ class VerVenta extends React.Component {
                                             <td>
                                                 <img src={p.image} alt="Imagen" height={100}/>
                                             </td>
-                                            <td>{p.nombre}</td>
+                                            <td>{p.nombre}<br/>{p.codigo}</td>
                                             <td>{p.cantidad}</td>
                                             <td>${p.precio}</td>
                                             <td>${p.cantidad*p.precio}</td>
