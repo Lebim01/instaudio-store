@@ -72,8 +72,7 @@ class AddProducto extends React.Component {
                     </Tooltip>
                 </TableCell>
                 <TableCell padding={'dense'}>
-                    <img src={image.url} alt="Imagen" height={100}/> <br/>
-                    {codigo}
+                    <img src={image.url} alt="Imagen" height={100}/> 
                 </TableCell>
                 <TableCell padding={'dense'}>
                     <TextField
@@ -83,6 +82,8 @@ class AddProducto extends React.Component {
                             readOnly: true
                         }}
                     />
+                    <br/>
+                    {codigo}
                 </TableCell>
                 <TableCell padding={'dense'} style={{width: 100, maxWidth: 100}}>
                     <TextField
