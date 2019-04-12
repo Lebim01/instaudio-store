@@ -50,6 +50,7 @@ const styles = theme => ({
 });
 
 const columnData = [
+    { id: 'image', numeric: false, label: '', sortable : false, filterable : false },
     { id: 'nombre', numeric: false, label: 'Nombre', sortable : true, filterable : true },
     { id: 'linea', numeric: false, label: 'Linea de Producto', sortable : true, filterable : true },
     { id: 'marca', numeric: false, label: 'Marca', sortable : true, filterable : true },
@@ -173,6 +174,9 @@ class Productos extends React.Component {
                 tabIndex={-1}
                 key={props.id}
             >
+                <TableCell>
+                    <img src={props.image} alt="Imagen" height="100"/>
+                </TableCell>
                 <TableCell>{props.nombre}</TableCell>
                 <TableCell>
                     { props.linea_status >= 0
