@@ -46,8 +46,8 @@ class AddProducto extends React.Component {
     }
 
     handleChange = (name) => async (event) => {
-        const { id_producto, cantidad, precio_compra, precio_venta, placeholder_compra, placeholder_venta, utilidad, inventario } = this.props
-        let data = { id_producto, cantidad, precio_compra, precio_venta, placeholder_compra, placeholder_venta, utilidad, inventario }
+        const { id_producto, codigo, image, cantidad, precio_compra, precio_venta, placeholder_compra, placeholder_venta, utilidad, inventario } = this.props
+        let data = { id_producto, codigo, image, cantidad, precio_compra, precio_venta, placeholder_compra, placeholder_venta, utilidad, inventario }
         data[name] = event.target.value
         this.props.handleChange(data, this.props.index)
     }
@@ -60,7 +60,7 @@ class AddProducto extends React.Component {
     }
 
     render(){
-        const { id_producto, producto, cantidad, precio_venta, precio_compra, placeholder_compra, placeholder_venta, utilidad, inventario } = this.props
+        const { id_producto, producto, cantidad, precio_venta, precio_compra, placeholder_compra, placeholder_venta, utilidad, inventario, image } = this.props
 
         return (
             <TableRow>
@@ -70,6 +70,9 @@ class AddProducto extends React.Component {
                             <AttachMoney />
                         </Fab>
                     </Tooltip>
+                </TableCell>
+                <TableCell padding={'dense'}>
+                    <img src={image} alt="Imagen" height={200}/>
                 </TableCell>
                 <TableCell padding={'dense'}>
                     <TextField
