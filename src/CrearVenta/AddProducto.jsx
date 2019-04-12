@@ -60,7 +60,7 @@ class AddProducto extends React.Component {
     }
 
     render(){
-        const { id_producto, producto, cantidad, precio_venta, precio_compra, placeholder_compra, placeholder_venta, utilidad, inventario, image } = this.props
+        const { id_producto, producto, codigo, cantidad, precio_venta, precio_compra, placeholder_compra, placeholder_venta, utilidad, inventario, image } = this.props
 
         return (
             <TableRow>
