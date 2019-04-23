@@ -2,11 +2,11 @@ import React from 'react'
 import NumberFormat from 'react-number-format';
 import {
     DeleteForever,
-    AttachMoney
+    AttachMoney,
+    NewReleases
 } from '@material-ui/icons'
 import axios from 'axios'
 import {
-    CustomInput,
     Button
 } from './../components';
 import {
@@ -14,9 +14,10 @@ import {
     TableCell, 
     TableRow, 
     Tooltip,
-    Fab
+    Fab,
+    Select
 } from '@material-ui/core'
-import { LIST_PRICE_PRODUCT, SUGGESTED_PRICES } from './../routing'
+import { LIST_PRICE_PRODUCT } from './../routing'
 
 function NumberFormatCustom(props) {
     const { inputRef, onChange, ...other } = props;
@@ -46,8 +47,8 @@ class AddProducto extends React.Component {
     }
 
     handleChange = (name) => async (event) => {
-        const { id_producto, codigo, image, cantidad, precio_compra, precio_venta, placeholder_compra, placeholder_venta, utilidad, inventario } = this.props
-        let data = { id_producto, codigo, image, cantidad, precio_compra, precio_venta, placeholder_compra, placeholder_venta, utilidad, inventario }
+        const { id_producto, codigo, image, cantidad, precio_compra, precio_venta, placeholder_compra, placeholder_venta, utilidad, inventario, descripcion, tipo_precio } = this.props
+        let data = { id_producto, codigo, image, cantidad, precio_compra, precio_venta, placeholder_compra, placeholder_venta, utilidad, inventario, descripcion, tipo_precio }
         data[name] = event.target.value
         this.props.handleChange(data, this.props.index)
     }
@@ -60,7 +61,7 @@ class AddProducto extends React.Component {
     }
 
     render(){
-        const { id_producto, producto, codigo, cantidad, precio_venta, precio_compra, placeholder_compra, placeholder_venta, utilidad, inventario, image } = this.props
+        const { id_producto, producto, codigo, cantidad, precio_venta, placeholder_venta, inventario, image, isPromocion, descripcion, tipo_precio } = this.props
 
         return (
             <TableRow>
@@ -70,20 +71,29 @@ class AddProducto extends React.Component {
                             <AttachMoney />
                         </Fab>
                     </Tooltip>
+                    { isPromocion &&
+                        <Tooltip title="Este producto tiene descuento">
+                            <Fab size="small" className="success">
+                                <NewReleases />
+                            </Fab>
+                        </Tooltip>
+                    }
                 </TableCell>
                 <TableCell padding={'dense'} style={{width: 200, maxWidth : 200}}>
                     <img src={image.url} alt="Imagen" height={100}/> 
                 </TableCell>
                 <TableCell padding={'dense'}>
-                    <TextField
-                        value={producto}
-                        fullWidth={true}
-                        InputProps={{
-                            readOnly: true
-                        }}
-                    />
+                    <Tooltip title={descripcion}>
+                        <TextField
+                            value={producto}
+                            fullWidth={true}
+                            InputProps={{
+                                readOnly: true
+                            }}
+                        />
+                    </Tooltip>
                     <br/>
-                    {codigo}
+                    <span>{codigo}</span>
                 </TableCell>
                 <TableCell padding={'dense'} style={{width: 100, maxWidth: 100}}>
                     <TextField
@@ -98,19 +108,28 @@ class AddProducto extends React.Component {
                     />
                 </TableCell>
                 <TableCell padding={'dense'}>
+                    <Select
+                        value={tipo_precio}
+                        native={true}
+                        onChange={this.handleChange('tipo_precio')}
+                        style={{textAlign : 'left'}}
+                    >
+                        <option value="Menudeo">Menudeo</option>
+                        <option value="Semimenudeo">Semimenudeo</option>
+                        <option value="Mayoreo">Mayoreo</option>
+                    </Select>
                     <TextField
                         value={precio_venta}
                         fullWidth={true}
                         onChange={this.handleChange('precio_venta')}
-                        id="precio_venta"
-                        placeholder={placeholder_venta}
+                        placeholder={placeholder_venta[tipo_precio]}
                         InputProps={{
                             inputComponent: NumberFormatCustom
                         }}
                     />
                 </TableCell>
                 <TableCell padding={'dense'} style={{width: 100, maxWidth: 100}}>
-                    <Button size="small" color="primary" variant="contained" className="danger" onClick={() => this.props.deleteProduct(id_producto)}>
+                    <Button size="small" color="inherent" variant="contained" className="danger" style={{color: 'white', backgroundColor : 'red'}} onClick={() => this.props.deleteProduct(id_producto)}>
                         <DeleteForever />
                     </Button>
                 </TableCell>

@@ -11,7 +11,8 @@ import {
   redCardHeader,
   blueCardHeader,
   purpleCardHeader,
-  yellowCardHeader
+  yellowCardHeader,
+  blackCardHeader
 } from "./../material-dashboard-react.jsx";
 
 const regularCardStyle = {
@@ -34,6 +35,7 @@ const regularCardStyle = {
   blueCardHeader,
   purpleCardHeader,
   yellowCardHeader,
+  blackCardHeader,
   cardTitle: {
     color: "#FFFFFF",
     marginTop: "0",

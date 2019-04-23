@@ -2,6 +2,7 @@ import React from 'react'
 import axios from 'axios'
 import {LIST_LINEAS, LIST_MARCAS} from 'routing'
 import green from 'material-ui/colors/green';
+import moment from 'moment'
 import { withStyles } from '@material-ui/core/styles';
 import {
     Select,
@@ -71,7 +72,15 @@ class InformacionBasica extends React.Component {
         lineas : [],
         marcas : [],
         palabrasclave : [],
-        isBox : false
+        isBox : false,
+        isPromocion : false,
+        promocion_desde : '',
+        promocion_hasta : '',
+        promocion_limite : 0,
+        promocion_tipo_descuento : 'Porcentaje',
+        promocion_descuento : 0,
+        minimo_inventario : 0,
+        maximo_inventario : 0
     }
 
     constructor(props){
@@ -102,7 +111,15 @@ class InformacionBasica extends React.Component {
             isBox : props.isBox,
             palabrasclave : props.palabrasclave,
             errorMessage : props.errorMessage,
-            cantidad_unidades : props.cantidad_unidades
+            cantidad_unidades : props.cantidad_unidades,
+            isPromocion : props.isPromocion,
+            promocion_desde : props.promocion_desde,
+            promocion_hasta : props.promocion_hasta,
+            promocion_descuento : props.promocion_descuento,
+            promocion_limite : props.promocion_limite,
+            promocion_tipo_descuento : props.promocion_tipo_descuento,
+            minimo_inventario : props.minimo_inventario,
+            maximo_inventario : props.maximo_inventario,
         })
     }
 
@@ -126,7 +143,15 @@ class InformacionBasica extends React.Component {
                 codigo : this.state.codigo,
                 isBox : this.state.isBox,
                 palabrasclave : this.state.palabrasclave,
-                cantidad_unidades : this.state.cantidad_unidades
+                cantidad_unidades : this.state.cantidad_unidades,
+                promocion_descuento : this.state.promocion_descuento,
+                isPromocion : this.state.isPromocion,
+                promocion_desde : this.state.promocion_desde,
+                promocion_hasta : this.state.promocion_hasta,
+                promocion_limite : this.state.promocion_limite,
+                promocion_tipo_descuento : this.state.promocion_tipo_descuento,
+                maximo_inventario : this.state.maximo_inventario,
+                minimo_inventario : this.state.minimo_inventario
             }
             this.props.onChange(estado)
         }
@@ -161,7 +186,8 @@ class InformacionBasica extends React.Component {
     }
 
     render(){
-        const { errorMessage, nombre, descripcion, linea, marca, palabrasclave, _palabraclave, codigo, isBox, cantidad_unidades } = this.state
+        const { errorMessage, nombre, descripcion, linea, marca, palabrasclave, _palabraclave, codigo, isBox, cantidad_unidades, isPromocion, promocion_desde, promocion_hasta, promocion_descuento, promocion_tipo_descuento } = this.state
+        const { minimo_inventario, maximo_inventario } = this.state
         const { classes } = this.props
         return (
             <div className={styles.root}>
@@ -194,6 +220,17 @@ class InformacionBasica extends React.Component {
                             }}
                         />
                     </Grid>
+                    <Grid item xs={12} md={4} className={styles.paper}>
+                        <TextField 
+                            label="Mínimo inventario"
+                            fullWidth 
+                            value={minimo_inventario}
+                            onChange={this.handleChange('minimo_inventario')}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        />
+                    </Grid>
                 </Grid>
 
                 <Grid container spacing={24} className={styles.row}>
@@ -218,8 +255,17 @@ class InformacionBasica extends React.Component {
                             }}
                         />
                     </Grid>
+                    <Grid item xs={12} md={4} className={styles.paper}></Grid>
                     <Grid item xs={12} md={4} className={styles.paper}>
-                        
+                        <TextField 
+                            label="Máximo inventario"
+                            fullWidth 
+                            value={maximo_inventario}
+                            onChange={this.handleChange('maximo_inventario')}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        />
                     </Grid>
                 </Grid>
 
@@ -304,8 +350,6 @@ class InformacionBasica extends React.Component {
                             }
                             label="Es Paquete?"
                         />
-                    </Grid>
-                    <Grid item xs={6} md={4} className={styles.paper}>
                         { isBox &&
                             <TextField 
                                 label="Cantidad de Unidades"
@@ -317,6 +361,105 @@ class InformacionBasica extends React.Component {
                                 }}
                             />
                         }
+                    </Grid>
+                    <Grid item xs={6} md={4} className={styles.paper}>
+                        <div className="col-md-12">
+                            <div>
+                                <div className="col-md-6 inline-block">
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                name="isPromocion"
+                                                checked={isPromocion}
+                                                onChange={this.handleChange('isPromocion')}
+                                                value="isPromocion"
+                                            />
+                                        }
+                                        label="Promoción"
+                                    />
+                                </div>
+                                <div className="col-md-6 inline-block"></div>
+                            </div>
+                            
+                            <div>
+                                <div className="col-md-6 inline-block">
+                                    { isPromocion &&
+                                        <TextField
+                                            label="Desde"
+                                            type="date"
+                                            onChange={this.handleChange('promocion_desde')}
+                                            fullWidth
+                                            value={promocion_desde}
+                                            error={promocion_desde && promocion_hasta ? moment(promocion_desde).isAfter(promocion_hasta) : false}
+                                            helperText={promocion_desde && promocion_hasta ? moment(promocion_desde).isAfter(promocion_hasta) ? 'Fecha incorrecta' : '' : ''}
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                        />
+                                    }
+                                </div>
+                                <div className="col-md-6 inline-block">
+                                    { isPromocion &&
+                                        <TextField
+                                            label="Hasta"
+                                            type="date"
+                                            onChange={this.handleChange('promocion_hasta')}
+                                            fullWidth
+                                            value={promocion_hasta}
+                                            error={promocion_desde && promocion_hasta ? moment(promocion_hasta).isBefore(promocion_desde) : false}
+                                            helperText={promocion_desde && promocion_hasta ? moment(promocion_hasta).isBefore(promocion_desde) ? 'Fecha incorrecta' : '' : ''}
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                        />
+                                    }
+                                </div>
+                            </div>
+                            
+                            <div style={{ marginTop : 10 }}>
+                                <div className="col-md-6 inline-block">
+                                    { isPromocion &&
+                                        <TextField 
+                                            label="Descuento"
+                                            fullWidth 
+                                            value={promocion_descuento}
+                                            onChange={this.handleChange('promocion_descuento')}
+                                        />
+                                    }
+                                </div>
+                                <div className="col-md-6 inline-block">
+                                    { isPromocion &&
+                                        <FormControl className={styles.formControl} fullWidth>
+                                            <InputLabel htmlFor="tipo_descuento" shrink={true}>Tipo Descuento</InputLabel>
+                                            <Select
+                                                value={promocion_tipo_descuento}
+                                                native={true}
+                                                onChange={this.handleChange('promocion_tipo_descuento')}
+                                                style={{textAlign : 'left'}}
+                                                inputProps={{
+                                                    name: 'tipo_descuento',
+                                                    id: 'tipo_descuento'
+                                                }}
+                                            >
+                                                <option value="Porcentaje">Porcentaje</option>
+                                                <option value="Cantidad">Cantidad</option>
+                                            </Select>
+                                        </FormControl>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={24} className={styles.row}>
+                    <Grid item xs={12} md={4} className={styles.paper}>
+                    
+                    </Grid>
+                    <Grid item xs={12} md={4} className={styles.paper}>
+                    
+                    </Grid>
+                    <Grid item xs={12} md={4} className={styles.paper}>
+                        
                     </Grid>
                 </Grid>
                 <Grid container spacing={24} className={styles.row}>

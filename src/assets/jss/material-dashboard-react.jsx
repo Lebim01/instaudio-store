@@ -62,6 +62,7 @@ const successColor = "#4caf50";
 const infoColor = "#00acc1";
 const roseColor = "#e91e63";
 const grayColor = "#999999";
+const blackColor = "#000";
 
 const primaryBoxShadow = {
   boxShadow:
@@ -97,7 +98,7 @@ const redCardHeader = {
   ...dangerBoxShadow
 };
 const blueCardHeader = {
-  background: "linear-gradient(60deg, #26c6da, #00acc1)",
+  background: "#509cc4",
   ...infoBoxShadow
 };
 const purpleCardHeader = {
@@ -105,6 +106,10 @@ const purpleCardHeader = {
   ...primaryBoxShadow
 };
 const yellowCardHeader = {
+  background : "#000",
+  ...primaryBoxShadow
+}
+const blackCardHeader = {
   background : "#000",
   ...primaryBoxShadow
 }
@@ -147,6 +152,7 @@ export {
   infoColor,
   roseColor,
   grayColor,
+  blackColor,
   primaryBoxShadow,
   infoBoxShadow,
   successBoxShadow,
@@ -156,6 +162,7 @@ export {
   greenCardHeader,
   redCardHeader,
   yellowCardHeader,
+  blackCardHeader,
   blueCardHeader,
   purpleCardHeader,
   cardActions,

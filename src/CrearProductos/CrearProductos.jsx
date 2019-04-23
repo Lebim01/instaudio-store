@@ -100,6 +100,8 @@ class CrearProductos extends React.Component {
         linea : 0,
         marca : 0,
         cantidad_unidades: 0,
+        maximo_inventario : 0,
+        minimo_inventario : 0,
         id : null,
         loading : true,
         isBox : false,
@@ -128,8 +130,15 @@ class CrearProductos extends React.Component {
                         codigo : r.data.codigo,
                         photos_saved : r.data.photos,
                         palabrasclave : r.data.palabrasclave,
-                        isBox : r.data.isBox,
+                        isBox : r.data.isBox == 1,
                         cantidad_unidades : r.data.cantidad_unidades,
+                        isPromocion : r.data.isPromocion == 1,
+                        promocion_desde : r.data.promocion_desde,
+                        promocion_hasta : r.data.promocion_hasta,
+                        promocion_tipo_descuento : r.data.promocion_tipo_descuento,
+                        promocion_descuento : r.data.promocion_descuento,
+                        minimo_inventario : r.data.minimo_inventario,
+                        maximo_inventario : r.data.maximo_inventario,
                         validStep2 : true,
                         loading : false
                     }, ()=> {
@@ -165,7 +174,7 @@ class CrearProductos extends React.Component {
     }
 
     boolValidStep1(){
-        let { nombre, linea, marca, promocion_desde, promocion_hasta, nuevo_desde, nuevo_hasta, isNuevo, isPromocion, cantidad_unidades, isBox } = this.state
+        let { nombre, promocion_desde, promocion_hasta, nuevo_desde, nuevo_hasta, isNuevo, isPromocion } = this.state
         let valid = true
 
         if(!(nombre !== '')) valid = false
@@ -238,6 +247,13 @@ class CrearProductos extends React.Component {
                 palabrasclave : this.state.palabrasclave,
                 isBox : this.state.isBox,
                 cantidad_unidades : this.state.cantidad_unidades,
+                isPromocion : this.state.isPromocion,
+                promocion_desde : this.state.promocion_desde,
+                promocion_hasta : this.state.promocion_hasta,
+                promocion_tipo_descuento : this.state.promocion_tipo_descuento,
+                promocion_descuento : this.state.promocion_descuento,
+                maximo_inventario : this.state.maximo_inventario,
+                minimo_inventario : this.state.minimo_inventario
             },
             headers = { headers: {'Content-Type': 'application/json;charset=UTF-8'} }
             axios.post(SAVE_PRODUCTS, params, headers)
@@ -268,6 +284,8 @@ class CrearProductos extends React.Component {
     render() {
         const { classes, theme } = this.props;
         const { validStep1, validStep2, nombre, descripcion, codigo, linea, marca, photos, photos_saved, palabrasclave, isBox, cantidad_unidades, loading, errorMessage } = this.state
+        const { isPromocion, promocion_desde, promocion_hasta, promocion_tipo_descuento, promocion_descuento } = this.state
+        const { minimo_inventario, maximo_inventario } = this.state
         
         return (
             <div className={classes.root}>
@@ -323,7 +341,7 @@ class CrearProductos extends React.Component {
                     <TabContainer dir={theme.direction}>
                         <InformacionBasica 
                             onChange={this.changeStep1.bind(this)}
-                            {...{nombre, descripcion, linea, marca, codigo, palabrasclave, isBox, cantidad_unidades, errorMessage}} />
+                            {...{nombre, descripcion, linea, marca, codigo, palabrasclave, isBox, cantidad_unidades, errorMessage, isPromocion, promocion_desde, promocion_hasta, promocion_tipo_descuento, promocion_descuento, minimo_inventario, maximo_inventario}} />
                     </TabContainer>
                     <TabContainer dir={theme.direction}>
                         <Fotos 

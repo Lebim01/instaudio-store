@@ -1,4 +1,4 @@
-let HOST = `http://104.248.214.60/api-admin/index.php`
+let HOST = `http://localhost/api-admin/index.php`
 
 module.exports = {
     LOGIN : `${HOST}/admin/login`,
@@ -7,6 +7,7 @@ module.exports = {
     INVENTORY : `${HOST}/inventario`,
     ADD_INVENTORY : `${HOST}/inventario/save`,
     SUGGESTED_PRICES : `${HOST}/inventario/suggestedPrices`,
+    BUY_ONE : `${HOST}/inventario/one`,
 
     SALES : `${HOST}/ventas`,
     ADD_SALE : `${HOST}/ventas/save`,
@@ -45,5 +46,11 @@ module.exports = {
     UP_IMAGE_INICIO : `${HOST}/inicio/upImage`,
     DELETE_IMAGE_INICIO : `${HOST}/inicio/deleteImage`,
 
-    
+    INVENTARIO_NOTIFIY : `${HOST}/inventario/notificacion`,
+    INVENTARIO_NOTIFIY_LIST : `${HOST}/inventario/listnotificacion`,
+
+    LIST_USERS : `${HOST}/usuarios/index`,
+    DELETE_USER : `${HOST}/usuarios/delete`,
+    ONE_USER : `${HOST}/usuarios/one`,
+    SAVE_USER : `${HOST}/usuarios/save`,
 }

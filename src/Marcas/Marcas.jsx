@@ -28,10 +28,6 @@ const styles = theme => ({
     }
 });
 
-const goAdd = () => {
-    window.location = '#/marcas/create'
-}
-
 const columnData = [
     { id: 'nombre', numeric: false, label: 'Nombre', sortable : true, filterable : true },
     { id: 'actions', label : 'Acciones', sortable : false }
@@ -45,6 +41,7 @@ class Marcas extends React.Component {
         super(props)
         this._delete = this._delete.bind(this)
         this.goEdit = this.goEdit.bind(this)
+        this.goAdd = this.goAdd.bind(this)
     }
 
     componentDidMount(){
@@ -101,13 +98,19 @@ class Marcas extends React.Component {
                     </Button>
                 </Tooltip>
                 <Tooltip title="Borrar">
-                    <Button variant="fab" color="secondary" aria-label="Trash" mini className={styles.button} onClick={(e) => this._delete(e, props)}>
+                    <Button variant="fab" color="inherent" aria-label="Trash" mini className={styles.button} style={{backgroundColor : '#db2b2b', color : 'white'}} onClick={(e) => this._delete(e, props)}>
                         <TrashIcon />
                     </Button>
                 </Tooltip>
             </TableCell>
         </TableRow>
     )
+
+    goAdd(){
+        this.props.history.push({
+            pathname : '/marcas/create'
+        })
+    }
 
     goEdit(event, item){
         event.preventDefault()
@@ -131,11 +134,11 @@ class Marcas extends React.Component {
                     loadedClassName="loadedContent" />
                 <RegularCard
                     cardTitle="Listado de Marcas"
-                    headerColor='red'
+                    headerColor='blue'
                     content = {
                         <div>
                             <Tooltip title="Agregar">
-                                <Button variant="fab" color="secondary" aria-label="Add" mini style={{float:'right'}} onClick={goAdd}>
+                                <Button variant="fab" color="inherent" aria-label="Add" mini style={{float:'right', backgroundColor : 'green', color : 'white'}} onClick={this.goAdd}>
                                     <AddIcon />
                                 </Button>
                             </Tooltip>

@@ -5,6 +5,7 @@ import axios from 'axios'
 import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
 import Loader from 'react-loader'
+import {store} from 'store'
 
 const instadio_logo = require('assets/img/instaudio.png')
 
@@ -19,6 +20,7 @@ class Login extends React.Component {
             loadin : false
         }
         // Bindings
+        this.redirect = this.redirect.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this);
         this.onChangeInput = this.onChangeInput.bind(this)
 
@@ -33,14 +35,19 @@ class Login extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        const { username, password } = this.state;
-        this.setState({loading  : true})
+        let self = this
+        const { username, password } = self.state;
+        self.setState({loading  : true})
         axios.post(LOGIN, { username, password })
-        .then((r) => {
-            this.setState({loading  : false})
-            if(r.data.status){
-                localStorage.setItem('token', r.data.token)
-                this.redirect()
+        .then(({data}) => {
+            self.setState({loading  : false})
+            if(data.status){
+                localStorage.setItem('token', data.token)
+                store.dispatch({
+                    type : 'LOGIN',
+                    ...data
+                })
+                self.redirect()
             }else{
                 toastr.error('Usurio y/o Contraseña invalidos')
             }
@@ -48,7 +55,9 @@ class Login extends React.Component {
     }
 
     redirect(){
-        window.location = '#/productos'
+        this.props.history.push({
+            pathname : '/productos'
+        })
     }
 
     render() {

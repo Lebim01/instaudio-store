@@ -112,7 +112,6 @@ class Crear extends React.Component {
                 factura,
                 proveedor,
                 descuento_porcentaje : descuento,
-
                 descuento : _descuento,
                 subtotal : _subtotal,
                 iva : _iva,
@@ -154,7 +153,13 @@ class Crear extends React.Component {
         let exists = this.state.list.filter((p) => p.id_producto == id_producto).length > 0
         if(!exists){
             let product = (await axios.post(ONE_PRODUCTS, { id: id_producto })).data
-            list.push({ id_producto, producto : product.nombre, cantidad : 0, placeholder_compra : precio_compra, placeholder_venta : precio_venta })
+            list.push({ 
+                id_producto,
+                producto : product.nombre,
+                cantidad : 0,
+                placeholder_compra : precio_compra,
+                placeholder_venta : precio_venta
+            })
             this.setState({
                 list,
                 openAddProduct : false
@@ -189,10 +194,6 @@ class Crear extends React.Component {
         })
     }
 
-    suggestedPrice(){
-
-    }
-
     changeTotals(){
         const { descuento, list } = this.state
 
@@ -215,8 +216,7 @@ class Crear extends React.Component {
         const validos = list.filter(product => 
             product.id_producto > 0 &&
             (product.cantidad > 0 || product.cantidad < 0) &&
-            (product.precio_compra > 0 || product.placeholder_compra > 0) &&
-            (product.precio_venta > 0 || product.placeholder_venta > 0)
+            (product.precio_compra > 0 || product.placeholder_compra > 0)
         )
         const isValid = validos.length == list.length && list.length > 0
 
@@ -240,7 +240,7 @@ class Crear extends React.Component {
                         <RegularCard
                             cardTitle="Crear Entrada de Inventario"
                             cardSubtitle="Completa la información"
-                            headerColor='red'
+                            headerColor='blue'
                             classes={{
                                 cardHeader : 'RegularCard-cardTitle-101'
                             }}
@@ -303,7 +303,7 @@ class Crear extends React.Component {
                     <ItemGrid xs={12} sm={12} md={12}>
                         <RegularCard
                             cardTitle="Productos"
-                            headerColor='red'
+                            headerColor='blue'
                             classes={{
                                 cardHeader : 'RegularCard-cardTitle-101'
                             }}
@@ -324,6 +324,9 @@ class Crear extends React.Component {
                                                             <i className="fa fa-info"></i> 
                                                         </span>
                                                     </Tooltip>
+                                                </TableCell>
+                                                <TableCell style={{width : 150}}>
+                                                    
                                                 </TableCell>
                                                 <TableCell style={{width : 150}}>
                                                     % Utilidad

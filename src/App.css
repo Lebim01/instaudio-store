@@ -59,3 +59,40 @@
 .pull-right {
   float: right;
 }
+
+.hide {
+  display : none;
+}
+
+@keyframes bell {
+  0% { transform: rotate(0); }
+  10% { transform: rotate(30deg); }
+  20% { transform: rotate(0); }
+  80% { transform: rotate(0); }
+  90% { transform: rotate(-30deg); }
+  100% { transform: rotate(0); }
+}
+
+.inline-block{
+  display : inline-block !important;
+}
+
+.btn-circle {
+  width : 24px !important;
+  height : 24px !important;
+  border-radius: 50% !important;
+}
+
+.bg-green{
+  background-color : green !important; 
+  color : white !important;
+}
+
+.float-right {
+  float: right;
+}
+
+.font-red {
+  color : #e1ef40 !important;
+  animation: bell 1s 1s both infinite;
+}

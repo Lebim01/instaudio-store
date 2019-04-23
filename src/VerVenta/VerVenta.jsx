@@ -52,7 +52,6 @@ class VerVenta extends React.Component {
     }
 
     componentDidMount(){
-        console.log('mount')
         if(this.getId() > 0){
             axios.post(SELL_ONE, {id: this.getId()})
             .then((r) => {
@@ -82,7 +81,7 @@ class VerVenta extends React.Component {
 
                 <RegularCard
                     cardTitle={"Venta #"+data.factura}
-                    headerColor='red'
+                    headerColor='blue'
                     classes={{
                         cardHeader : 'RegularCard-cardTitle-101'
                     }}

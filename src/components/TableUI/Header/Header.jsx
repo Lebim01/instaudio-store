@@ -81,6 +81,7 @@ class Header extends React.Component {
                                             style={{minWidth: 100}} 
                                             onChange={this.onChange.bind(this)} 
                                             name={column.id}
+                                            autoComplete={'off'}
                                             value={filters[column.id] || ''} />
                                     : <div></div>
                                 }

@@ -224,7 +224,7 @@ class Productos extends React.Component {
                         </Button>
                     </Tooltip>
                     <Tooltip title="Borrar">
-                        <Button variant="fab" color="secondary" aria-label="Trash" mini style={{...styles.button, ...styles.buttonRed}} onClick={(e) => this._delete(e, props)}>
+                        <Button variant="fab" color="inherit" aria-label="Trash" mini style={{backgroundColor : '#db2b2b', color : 'white'}} onClick={(e) => this._delete(e, props)}>
                             <TrashIcon />
                         </Button>
                     </Tooltip>
@@ -275,14 +275,14 @@ class Productos extends React.Component {
 
                 <RegularCard
                     cardTitle="Listado de Productos"
-                    headerColor='red'
+                    headerColor='blue'
                     classes={{
                         cardHeader : 'RegularCard-cardTitle-101'
                     }}
                     content = {
                         <div>
                             <Tooltip title="Agregar">
-                                <Button variant="fab" color="secondary" aria-label="Add" mini style={{float:'right'}} onClick={goAdd}>
+                                <Button variant="fab" color="inherent" aria-label="Add" mini style={{float:'right', backgroundColor : 'green', color : 'white'}} onClick={goAdd}>
                                     <AddIcon />
                                 </Button>
                             </Tooltip>

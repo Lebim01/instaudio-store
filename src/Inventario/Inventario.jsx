@@ -32,10 +32,6 @@ const columnData = [
     { id: 'cantidad', numeric: true, disablePadding: false, label: 'Cantidad', sortable : true },
 ];
 
-const goAdd = () => {
-    window.location = '#/inventario/create'
-}
-
 class Inventario extends React.Component {
 
     state = { data : [], loading : true }
@@ -43,6 +39,7 @@ class Inventario extends React.Component {
     constructor(props){
         super(props)
 
+        this.goAdd = this.goAdd.bind(this)
         this.RowFormat = this.RowFormat.bind(this)
     }
 
@@ -68,6 +65,12 @@ class Inventario extends React.Component {
         let _p = date.split('-')
         return `${_p[2]}/${_p[1]}/${_p[0]}`
     }
+
+    goAdd(){
+        this.props.history.push({
+            pathname: '/inventario/create',
+        })
+    }
     
     RowFormat = props => (
         <TableRow
@@ -79,7 +82,11 @@ class Inventario extends React.Component {
                 <img src={props.image} alt="Imagen" height={100}/>
             </TableCell>
             <TableCell >{props.producto}</TableCell>
-            <TableCell >{this.dateToFormat(props.ultima_compra)}</TableCell>
+            <TableCell >
+                <a href={"#/inventario/edit?id="+props.id}>
+                    {this.dateToFormat(props.ultima_compra)}
+                </a>
+            </TableCell>
             <TableCell >{this.dateToFormat(props.ultima_venta)}</TableCell>
             <TableCell numeric>{props.cantidad}</TableCell>
         </TableRow>
@@ -95,13 +102,14 @@ class Inventario extends React.Component {
                     trail={60} shadow={false} hwaccel={false} className="spinner"
                     zIndex={2e9} top="50%" left="50%" scale={1.00}
                     loadedClassName="loadedContent" />
+
                 <RegularCard
                     cardTitle="Inventario"
-                    headerColor='red'
+                    headerColor='blue'
                     content = {
                         <div>
                             <Tooltip title="Agregar">
-                                <Fab variant="fab" color="secondary" aria-label="Add" size="small" style={{float:'right'}} onClick={goAdd}>
+                                <Fab variant="fab" color="inherent" aria-label="Add" size="small" style={{float:'right', backgroundColor : 'green', color : 'white'}} onClick={this.goAdd}>
                                     <AddIcon />
                                 </Fab>
                             </Tooltip>

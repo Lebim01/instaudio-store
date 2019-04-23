@@ -14,16 +14,18 @@ import {
     TableCell, 
     TableHead, 
     TableRow, 
-    Tooltip
+    Tooltip,
+    InputAdornment
 } from '@material-ui/core'
 import './CrearVenta.css'
 import axios from 'axios'
 import toastr from 'toastr'
-import { ADD_SALE, ONE_PRODUCTS } from './../routing'
+import { ADD_SALE, ONE_PRODUCTS, GET_PRODUCT_CODE, SUGGESTED_PRICES } from './../routing'
 import { UNEXPECTED } from './../dictionary'
 import DialogAddProduct from './DialogAddProduct';
 import AddProducto from './AddProducto'
 import DialogHistoryPrice from '../CrearInventarioEntrada/DialogHistoryPrice'
+import Hotkeys from 'react-hot-keys'
 
 const styles = {
     underline : {
@@ -48,7 +50,9 @@ class Crear extends React.Component {
         producto : '',
         descuento : '',
         openAddProduct : false,
-        historyPrices : []
+        historyPrices : [],
+        codigo : '',
+        errorCode : ''
     }
 
     constructor(props){
@@ -56,6 +60,7 @@ class Crear extends React.Component {
 
         this.add = this.add.bind(this)
         this.save = this.save.bind(this)
+        this.goList = this.goList.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.deleteProduct = this.deleteProduct.bind(this)
         this.handleAddProduct = this.handleAddProduct.bind(this)
@@ -96,7 +101,52 @@ class Crear extends React.Component {
     }
 
     goList(){
-        window.location = '#/ventas'
+        this.props.history.push({
+            pathname : '/ventas'
+        })
+    }
+
+    async calcularPrecios(){
+        const { id_producto, } = this.state
+        const r = await axios.post(SUGGESTED_PRICES, { id_producto, cantidad : 0, precio_compra : null })
+        return r.data || { precio_compra : '', precio_venta : '' }
+    }
+
+    handleAddInput = async () => {
+        if(this.state.id_producto){
+            const { precio_compra, precio_venta } = await this.calcularPrecios()
+            this.handleAddProduct({ precio_compra, precio_venta, ...this.state })
+            this.setState({
+                codigo : ''
+            })
+        }
+    }
+
+    validCodeProduct = async () => {
+        try {
+            let r = await axios.post(GET_PRODUCT_CODE, { code : this.state.codigo })
+            if(r.data.id){
+                this.setState({
+                    errorCode : false,
+                    id_producto : r.data.id
+                })
+                this.handleAddInput()
+            }else{
+                throw 'Producto no conocido'
+            }
+        }catch(e){
+            this.setState({
+                errorCode : true,
+                errorCodeMessage : e
+            })
+        }
+    }
+
+    handleKeyPress = (event) => {
+        if (event.key === 'Enter'){ 
+            event.preventDefault();
+            this.validCodeProduct()
+        }
     }
 
     save(e){
@@ -152,7 +202,19 @@ class Crear extends React.Component {
         let exists = this.state.list.filter((p) => p.id_producto == id_producto).length > 0
         if(!exists){
             let product = (await axios.post(ONE_PRODUCTS, { id: id_producto })).data
-            list.push({ id_producto, codigo : product.codigo, image : product.photos[0] || '', producto : product.nombre, cantidad : 0, placeholder_compra : precio_compra, placeholder_venta : precio_venta, inventario : product.inventario })
+            list.push({ 
+                id_producto, 
+                codigo : product.codigo, 
+                image : product.photos[0] || '', 
+                producto : product.nombre, 
+                cantidad : 0, 
+                placeholder_compra : precio_compra, 
+                placeholder_venta : product.precios,
+                inventario : product.inventario ,
+                isPromocion : product.isPromocion == 1,
+                descripcion : product.descripcion,
+                tipo_precio : 'Menudeo'
+            })
             this.setState({
                 list,
                 openAddProduct : false
@@ -187,8 +249,16 @@ class Crear extends React.Component {
         })
     }
 
+    onKeyDown(keyName, e, handle) {
+        switch(keyName){
+            case 'f2':
+                document.getElementById('codigo').focus()
+            break;
+        }
+    }
+
     render(){
-        const { list, factura, cliente, descuento, _subtotal, _iva, _total, _descuento } = this.state
+        const { list, factura, cliente, descuento, _subtotal, _iva, _total, _descuento, codigo, errorCode } = this.state
         const { black } = this.props
         const validos = list.filter(product => 
             product.id_producto > 0 &&
@@ -198,193 +268,223 @@ class Crear extends React.Component {
         const isValid = validos.length == list.length && list.length > 0
 
         return (
-            <div className="create-line">
+            <Hotkeys 
+                keyName="f2"
+                onKeyDown={this.onKeyDown.bind(this)}
+            >
+                <div className="create-line">
+                    <DialogAddProduct
+                        open={this.state.openAddProduct}
+                        handleClose={this.handleCloseAddProduct}
+                        handleAdd={this.handleAddProduct}
+                    />
 
-                <DialogAddProduct
-                    open={this.state.openAddProduct}
-                    handleClose={this.handleCloseAddProduct}
-                    handleAdd={this.handleAddProduct}
-                />
+                    <DialogHistoryPrice
+                        open={this.state.openHistoryPrice}
+                        handleClose={this.handleCloseHistoryPrice}
+                        data={this.state.historyPrices}
+                    />
 
-                <DialogHistoryPrice
-                    open={this.state.openHistoryPrice}
-                    handleClose={this.handleCloseHistoryPrice}
-                    data={this.state.historyPrices}
-                />
-
-                <Grid container>
-                    <ItemGrid xs={12} sm={12} md={12}>
-                        <RegularCard
-                            cardTitle="Crear Venta"
-                            headerColor='red'
-                            classes={{
-                                cardHeader : 'RegularCard-cardTitle-101'
-                            }}
-                            content={
-                                <div>
-                                    <Grid container spacing={24} className={styles.row}>
-                                        <Grid item xs={12} md={4} className={styles.paper}>
-                                            <TextField
-                                                label="# Factura"
-                                                className={styles.textField}
-                                                value={factura}
-                                                onChange={this.handleChangeInput('factura')}
-                                                fullWidth
-                                                InputLabelProps={{
-                                                    shrink: true,
-                                                }}
-                                            />
+                    <Grid container>
+                        <Grid item xs={12} sm={12} md={12} style={{marginTop : 0, marginBottom : 5}} className="no-margin">
+                            <RegularCard
+                                cardTitle="Crear Venta"
+                                headerColor='blue'
+                                classes={{
+                                    cardHeader : 'RegularCard-cardTitle-101'
+                                }}
+                                content={
+                                    <div>
+                                        <Grid container spacing={24} className={styles.row}>
+                                            <Grid item xs={12} md={4} className={styles.paper}>
+                                                <TextField
+                                                    label="# Factura"
+                                                    className={styles.textField}
+                                                    value={factura}
+                                                    onChange={this.handleChangeInput('factura')}
+                                                    fullWidth
+                                                    InputLabelProps={{
+                                                        shrink: true,
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} md={4} className={styles.paper}>
+                                                <TextField
+                                                    label="Cliente"
+                                                    className={styles.textField}
+                                                    value={cliente}
+                                                    onChange={this.handleChangeInput('cliente')}
+                                                    fullWidth
+                                                    InputLabelProps={{
+                                                        shrink: true,
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} md={4} className={styles.paper}>
+                                                <TextField
+                                                    label="% Descuento"
+                                                    className={styles.textField}
+                                                    value={descuento}
+                                                    placeholder="0-100 %"
+                                                    onChange={this.handleChangeInput('descuento')}
+                                                    fullWidth
+                                                    InputProps={{
+                                                        type :"number"
+                                                    }}
+                                                    InputLabelProps={{
+                                                        shrink: true,
+                                                    }}
+                                                />
+                                            </Grid>
                                         </Grid>
-                                        <Grid item xs={12} md={4} className={styles.paper}>
-                                            <TextField
-                                                label="Cliente"
-                                                className={styles.textField}
-                                                value={cliente}
-                                                onChange={this.handleChangeInput('cliente')}
-                                                fullWidth
-                                                InputLabelProps={{
-                                                    shrink: true,
-                                                }}
-                                            />
+                                        <hr/>
+                                        <Grid container spacing={24} className={styles.row}>
+                                            <Grid item xs={12} md={4} className={styles.paper}>
+                                                <TextField
+                                                    id="codigo"
+                                                    label="Código"
+                                                    className={styles.textField}
+                                                    value={codigo}
+                                                    onChange={this.handleChangeInput('codigo')}
+                                                    onKeyPress={this.handleKeyPress}
+                                                    error={errorCode}
+                                                    helperText={errorCode ? 'Código no conocido' : ''}
+                                                    fullWidth
+                                                    InputLabelProps={{
+                                                        shrink: true,
+                                                    }}
+                                                    InputProps={{
+                                                        startAdornment : 
+                                                            <InputAdornment position="start">
+                                                                {/* CODIGO DE BARRAS FONTAWESOME */}
+                                                                <i className="fa fa-barcode"></i>
+                                                            </InputAdornment>
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} md={4} className={styles.paper}>
+                                                <Button classes={{ button: 'text-body primary' }} onClick={this.add}>
+                                                    Agregar Producto &nbsp;&nbsp;<i className="fa fa-plus"></i>
+                                                </Button>
+                                            </Grid>
                                         </Grid>
-                                        <Grid item xs={12} md={4} className={styles.paper}>
-                                            <TextField
-                                                label="% Descuento"
-                                                className={styles.textField}
-                                                value={descuento}
-                                                placeholder="0-100 %"
-                                                onChange={this.handleChangeInput('descuento')}
-                                                fullWidth
-                                                InputProps={{
-                                                    type :"number"
-                                                }}
-                                                InputLabelProps={{
-                                                    shrink: true,
-                                                }}
-                                            />
+                                    </div>
+                                }
+                            />
+                        </Grid>
+                        <ItemGrid xs={12} sm={12} md={12}>
+                            <RegularCard
+                                cardTitle="Productos"
+                                headerColor='blue'
+                                classes={{
+                                    cardHeader : 'RegularCard-cardTitle-101'
+                                }}
+                                content={
+                                    <div>
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell style={{width : 100}}></TableCell>
+                                                    <TableCell padding={'dense'}></TableCell>
+                                                    <TableCell padding={'dense'}>
+                                                        Producto
+                                                    </TableCell>
+                                                    <TableCell padding={'dense'} style={{width : 200}}>
+                                                        Cantidad
+                                                    </TableCell>
+                                                    <TableCell padding={'dense'} style={{width : 200}}>
+                                                        $ Precio Venta
+                                                    </TableCell>
+                                                    <TableCell padding={'dense'} style={{width : 200}}></TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                { list.map((prod, i) => 
+                                                    <AddProducto 
+                                                        key={i}
+                                                        {...prod} 
+                                                        index={i}
+                                                        black={black}
+                                                        handleChange={this.handleChange}
+                                                        deleteProduct={this.deleteProduct}
+                                                        openModalHistoryPrice={this.openModalHistoryPrice}
+                                                    /> 
+                                                ) }
+                                            </TableBody>
+                                        </Table>
+                                        <Grid container spacing={24} className={styles.row}>
+                                            <Grid item xs={12} md={6} style={{ ...styles.paper }}>
+                                                    
+                                            </Grid>
+                                            <Grid item xs={12} md={6} style={{ ...styles.paper }}>
+                                                <br/>
+                                                <br/>
+                                                <br/>
+                                                <Typography>
+                                                    <Grid container xs={12} md={12}>
+                                                        <Grid item xs={6} md={2} style={{ ...styles.paper }}>
+                                                            Subtotal:
+                                                        </Grid>
+                                                        <Grid item xs={6} md={10} style={{ ...styles.paper }}>
+                                                            $ {_subtotal}
+                                                        </Grid>
+                                                    </Grid>
+                                                    <hr/>
+                                                    <Grid container xs={12} md={12}>
+                                                        <Grid item xs={6} md={2} style={{ ...styles.paper }}>
+                                                            <Tooltip title="Subtotal * (1.6 / 100)">
+                                                                <span>Iva:</span>
+                                                            </Tooltip>
+                                                        </Grid>
+                                                        <Grid item xs={6} md={10} style={{ ...styles.paper }}>
+                                                            $ {_iva}
+                                                        </Grid>
+                                                    </Grid>
+                                                    <hr/>
+                                                    <Grid container xs={12} md={12}>
+                                                        <Grid item xs={6} md={2} style={{ ...styles.paper }}>
+                                                            <Tooltip title="(Subtotal + Iva) * (% Descuento / 100)">
+                                                                <span>Descuento:</span>
+                                                            </Tooltip>
+                                                        </Grid>
+                                                        <Grid item xs={6} md={10} style={{ ...styles.paper }}>
+                                                            $ {_descuento}
+                                                        </Grid>
+                                                    </Grid>
+                                                    <hr/>
+                                                    <Grid container xs={12} md={12}>
+                                                        <Grid item xs={6} md={2} style={{ ...styles.paper }}>
+                                                            <Tooltip title="Subtotal + Iva - Descuento">
+                                                                <span>Total:</span>
+                                                            </Tooltip>
+                                                        </Grid>
+                                                        <Grid item xs={6} md={10} style={{ ...styles.paper }}>
+                                                            $ {_total}
+                                                        </Grid>
+                                                    </Grid>
+                                                </Typography>
+                                            </Grid>
                                         </Grid>
-                                    </Grid>
-                                    <hr/>
-                                    <Grid container spacing={24} className={styles.row}>
-                                        <Grid item xs={12} md={4} className={styles.paper}>
-                                            <Button classes={{ button: 'text-body primary' }} onClick={this.add}>
-                                                Agregar Producto &nbsp;&nbsp;<i className="fa fa-plus"></i>
-                                            </Button>
-                                        </Grid>
-                                    </Grid>
-                                </div>
-                            }
-                        />
-                    </ItemGrid>
-                    <ItemGrid xs={12} sm={12} md={12}>
-                        <RegularCard
-                            cardTitle="Productos"
-                            headerColor='red'
-                            classes={{
-                                cardHeader : 'RegularCard-cardTitle-101'
-                            }}
-                            content={
-                                <div>
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell style={{width : 100}}></TableCell>
-                                                <TableCell padding={'dense'}></TableCell>
-                                                <TableCell padding={'dense'}>
-                                                    Producto
-                                                </TableCell>
-                                                <TableCell padding={'dense'} style={{width : 200}}>
-                                                    Cantidad
-                                                </TableCell>
-                                                <TableCell padding={'dense'} style={{width : 200}}>
-                                                    $ Precio Venta
-                                                </TableCell>
-                                                <TableCell padding={'dense'} style={{width : 200}}></TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            { list.map((prod, i) => 
-                                                <AddProducto 
-                                                    key={i}
-                                                    {...prod} 
-                                                    index={i}
-                                                    black={black}
-                                                    handleChange={this.handleChange}
-                                                    deleteProduct={this.deleteProduct}
-                                                    openModalHistoryPrice={this.openModalHistoryPrice}
-                                                /> 
-                                            ) }
-                                        </TableBody>
-                                    </Table>
-                                    <Grid container spacing={24} className={styles.row}>
-                                        <Grid item xs={12} md={6} style={{ ...styles.paper }}>
-                                                
-                                        </Grid>
-                                        <Grid item xs={12} md={6} style={{ ...styles.paper }}>
-                                            <br/>
-                                            <br/>
-                                            <br/>
-                                            <Typography>
-                                                <Grid container xs={12} md={12}>
-                                                    <Grid item xs={6} md={2} style={{ ...styles.paper }}>
-                                                        Subtotal:
-                                                    </Grid>
-                                                    <Grid item xs={6} md={10} style={{ ...styles.paper }}>
-                                                        $ {_subtotal}
-                                                    </Grid>
-                                                </Grid>
-                                                <hr/>
-                                                <Grid container xs={12} md={12}>
-                                                    <Grid item xs={6} md={2} style={{ ...styles.paper }}>
-                                                        <Tooltip title="Subtotal * (1.6 / 100)">
-                                                            <span>Iva:</span>
-                                                        </Tooltip>
-                                                    </Grid>
-                                                    <Grid item xs={6} md={10} style={{ ...styles.paper }}>
-                                                        $ {_iva}
-                                                    </Grid>
-                                                </Grid>
-                                                <hr/>
-                                                <Grid container xs={12} md={12}>
-                                                    <Grid item xs={6} md={2} style={{ ...styles.paper }}>
-                                                        <Tooltip title="(Subtotal + Iva) * (% Descuento / 100)">
-                                                            <span>Descuento:</span>
-                                                        </Tooltip>
-                                                    </Grid>
-                                                    <Grid item xs={6} md={10} style={{ ...styles.paper }}>
-                                                        $ {_descuento}
-                                                    </Grid>
-                                                </Grid>
-                                                <hr/>
-                                                <Grid container xs={12} md={12}>
-                                                    <Grid item xs={6} md={2} style={{ ...styles.paper }}>
-                                                        <Tooltip title="Subtotal + Iva - Descuento">
-                                                            <span>Total:</span>
-                                                        </Tooltip>
-                                                    </Grid>
-                                                    <Grid item xs={6} md={10} style={{ ...styles.paper }}>
-                                                        $ {_total}
-                                                    </Grid>
-                                                </Grid>
-                                            </Typography>
-                                        </Grid>
-                                    </Grid>
-                                </div>
-                            }
-                            footer={
-                                <div>
-                                    <Button color="simple" classes={{ button: 'text-body' }} onClick={this.goList}>
-                                        <i className="fa fa-arrow-left"></i>&nbsp;&nbsp;Regresar
-                                    </Button>
-                                    <Button color="success" onClick={this.save} disabled={!isValid}>
-                                        { this.state.id !== null ? 'Guardar' : 'Crear' }
-                                    </Button>
-                                </div>
-                            }
-                        />
-                    </ItemGrid>
-                </Grid>
-            </div>
+                                    </div>
+                                }
+                                footer={
+                                    <div>
+                                        <Button color="simple" classes={{ button: 'text-body' }} onClick={this.goList}>
+                                            <i className="fa fa-arrow-left"></i>&nbsp;&nbsp;Regresar
+                                        </Button>
+                                        <Button color="success" onClick={this.save} disabled={!isValid}>
+                                            Vender
+                                        </Button>
+                                        <Button color="success" onClick={this.save} disabled={!isValid}>
+                                            Cotizar
+                                        </Button>
+                                    </div>
+                                }
+                            />
+                        </ItemGrid>
+                    </Grid>
+                </div>
+            </Hotkeys>
         )
     }
 }

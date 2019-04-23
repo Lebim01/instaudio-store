@@ -1,10 +1,10 @@
 import { AUTH_LOGOUT, AUTH_CHECK } from 'react-admin';
 import axios from 'axios'
 import { AUTH } from './routing'
+import {store} from 'store'
 
 export default (type, params) => {
     if (type === AUTH_LOGOUT) {
-        localStorage.removeItem('token');
         return Promise.resolve();
     }
     if (type === AUTH_CHECK) {
@@ -13,8 +13,16 @@ export default (type, params) => {
             if(token){
                 try {
                     let headers = { headers: {'Content-Type': 'application/json;charset=UTF-8'} }
-                    let r = await axios.post(AUTH, { token : token }, headers)
-                    if(r.data.status == 200){
+                    let { data } = await axios.post(AUTH, { token : token }, headers)
+                    if(data.status == 200){
+                        let state = store.getState()
+                        if(!state.token){
+                            store.dispatch({
+                                type : 'LOGIN',
+                                ...data
+                            })
+                        }
+
                         resolve()
                     }else{
                         reject()

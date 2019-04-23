@@ -20,18 +20,28 @@ const columnData = [
     { id: 'actions', label : 'Acciones', sortable : false, style : { minWidth : 150 } }
 ];
 
-const goAdd = () => {
-    window.location = '#/ventas/create'
-}
-
 class Ventas extends React.Component {
     state = {
         data : [],
         loading : true
     }
 
+    constructor(props){
+        super(props)
+        this.go = this.go.bind(this)
+        this.goAdd = this.goAdd.bind(this)
+    }
+
     go(id){
-        window.location = '#/ventas/show?id='+id
+        this.props.history.push({
+            pathname: '/ventas/show?id='+id,
+        })
+    }
+
+    goAdd(){
+        this.props.history.push({
+            pathname: '/ventas/create',
+        })
     }
 
     RowFormat = props => {
@@ -82,14 +92,14 @@ class Ventas extends React.Component {
 
                 <RegularCard
                     cardTitle="Listado de Ventas"
-                    headerColor='red'
+                    headerColor='blue'
                     classes={{
                         cardHeader : 'RegularCard-cardTitle-101'
                     }}
                     content = {
                         <div>
                             <Tooltip title="Agregar">
-                                <Fab variant="fab" color="secondary" aria-label="Add" size="small" style={{float:'right'}} onClick={goAdd}>
+                                <Fab variant="fab" color="inherent" aria-label="Add" size="small" style={{float:'right', backgroundColor : 'green', color : 'white'}} onClick={this.goAdd}>
                                     <AddIcon />
                                 </Fab>
                             </Tooltip>

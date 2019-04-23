@@ -12,6 +12,7 @@ import toastr from 'toastr'
 import { SAVE_LINEAS, ONE_LINEAS } from './../routing'
 import { UNEXPECTED } from './../dictionary'
 import { TextField } from '@material-ui/core';
+import { MenuItemLink } from 'react-admin';
 
 class Crear extends React.Component {
     state = { name : '', id : null, errorMessage : '' }
@@ -79,7 +80,7 @@ class Crear extends React.Component {
                         <RegularCard
                             cardTitle="Crear Linea de Producto"
                             cardSubtitle="Completa la información"
-                            headerColor='red'
+                            headerColor='blue'
                             classes={{
                                 cardHeader : 'RegularCard-cardTitle-101'
                             }}
@@ -102,9 +103,7 @@ class Crear extends React.Component {
                             }
                             footer={
                                 <div>
-                                    <Button color="simple" classes={{ button: 'text-body' }} onClick={this.goList}>
-                                    <i className="fa fa-arrow-left"></i>&nbsp;&nbsp;Regresar
-                                    </Button>
+                                    <MenuItemLink to="/marcas" leftIcon={<i className="fa fa-arrow-left"></i>} primaryText="Regresar" className="inline-block" />
                                     <Button color="success" onClick={this.save} disabled={this.state.name === ''}>
                                         { this.state.id !== null ? 'Guardar' : 'Crear' }
                                     </Button>

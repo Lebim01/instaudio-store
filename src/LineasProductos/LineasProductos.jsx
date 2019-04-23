@@ -29,10 +29,6 @@ const columnData = [
     { id: 'actions', label : 'Acciones', sortable : false }
 ];
 
-const goAdd = () => {
-    window.location = '#/lineasproductos/create'
-}
-
 const styles = theme => ({
     root: {
         width: '100%',
@@ -58,6 +54,7 @@ class LineasProductos extends React.Component {
         // events
         this.delete = this.delete.bind(this)
         this.goEdit = this.goEdit.bind(this)
+        this.goAdd = this.goAdd.bind(this)
 
         this.state = {
             data: [],
@@ -112,6 +109,12 @@ class LineasProductos extends React.Component {
         })
     }
 
+    goAdd(){
+        this.props.history.push({
+            pathname: '/lineasproductos/create',
+        })
+    }
+
     RowFormat = props => (
         <TableRow
             hover
@@ -126,7 +129,7 @@ class LineasProductos extends React.Component {
                     </Button>
                 </Tooltip>
                 <Tooltip title="Borrar">
-                    <Button variant="fab" color="secondary" aria-label="Trash" mini className={styles.button} onClick={(e) => this.delete(e, props)}>
+                    <Button variant="fab" color="inherent" aria-label="Trash" mini className={styles.button} style={{backgroundColor : '#db2b2b', color : 'white'}} onClick={(e) => this.delete(e, props)}>
                         <TrashIcon />
                     </Button>
                 </Tooltip>
@@ -146,11 +149,11 @@ class LineasProductos extends React.Component {
 
                 <RegularCard
                     cardTitle="Listado de Lineas de Productos"
-                    headerColor='red'
+                    headerColor='blue'
                     content = {
                         <div>
                             <Tooltip title="Agregar">
-                                <Button variant="fab" color="secondary" aria-label="Add" mini style={{float:'right'}} onClick={goAdd}>
+                                <Button variant="fab" color="inherent" aria-label="Add" mini style={{float:'right', backgroundColor : 'green', color : 'white'}} onClick={this.goAdd}>
                                     <AddIcon />
                                 </Button>
                             </Tooltip>
