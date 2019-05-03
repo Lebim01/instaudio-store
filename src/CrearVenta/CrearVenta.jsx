@@ -71,7 +71,7 @@ class Crear extends React.Component {
 
     calculateTotals(){
         const { list } = this.state
-        const _subtotal = this.round(list.reduce((a, b) => a + (b.cantidad * (b.precio_venta || b.placeholder_venta)), 0) || 0)
+        const _subtotal = this.round(list.reduce((a, b) => a + (b.cantidad * (b.precio_venta || b.placeholder_venta[b.tipo_precio])), 0) || 0)
         const _iva = this.round(_subtotal * 0.16)
         const _descuento = this.round((_subtotal + _iva) * (this.state.descuento / 100))
         const _total = this.round(_subtotal + _iva - _descuento)
