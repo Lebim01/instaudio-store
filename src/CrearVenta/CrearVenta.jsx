@@ -182,6 +182,10 @@ class Crear extends React.Component {
         }
     }
 
+    cotizar(e){
+        e.preventDefault()
+    }
+
     add(){
         /**/
         
@@ -262,8 +266,7 @@ class Crear extends React.Component {
         const { black } = this.props
         const validos = list.filter(product => 
             product.id_producto > 0 &&
-            (product.cantidad > 0 || product.cantidad < 0) &&
-            (product.precio_venta > 0 || product.placeholder_venta > 0)
+            (product.cantidad > 0 || product.cantidad < 0)
         )
         const isValid = validos.length == list.length && list.length > 0
 
@@ -475,7 +478,7 @@ class Crear extends React.Component {
                                         <Button color="success" onClick={this.save} disabled={!isValid}>
                                             Vender
                                         </Button>
-                                        <Button color="success" onClick={this.save} disabled={!isValid}>
+                                        <Button color="success" onClick={this.cotizar} disabled={true}>
                                             Cotizar
                                         </Button>
                                     </div>

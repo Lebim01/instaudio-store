@@ -59,10 +59,6 @@ const columnData = [
     { id: 'actions', label : 'Acciones', sortable : false, style : { minWidth : 150 } }
 ];
 
-const goAdd = () => {
-    window.location = '#/productos/create'
-}
-
 class Productos extends React.Component {
     state = { data : [], loading : true }
 
@@ -70,6 +66,7 @@ class Productos extends React.Component {
         super(props)
 
         this.goEdit = this.goEdit.bind(this)
+        this.goAdd = this.goAdd.bind(this)
         this._changeStatus = this._changeStatus.bind(this)
         this._delete = this._delete.bind(this)
         this.loadProductos = this.loadProductos.bind(this)
@@ -262,6 +259,12 @@ class Productos extends React.Component {
         })
     }
 
+    goAdd = () => {
+        this.props.history.push({
+            pathname : '/productos/create'
+        })
+    }
+
     render(){
         const { data, loading } = this.state
 
@@ -282,7 +285,7 @@ class Productos extends React.Component {
                     content = {
                         <div>
                             <Tooltip title="Agregar">
-                                <Button variant="fab" color="inherent" aria-label="Add" mini style={{float:'right', backgroundColor : 'green', color : 'white'}} onClick={goAdd}>
+                                <Button variant="fab" color="inherent" aria-label="Add" mini style={{float:'right', backgroundColor : 'green', color : 'white'}} onClick={this.goAdd}>
                                     <AddIcon />
                                 </Button>
                             </Tooltip>
