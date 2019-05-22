@@ -1,4 +1,4 @@
-let HOST = `http://api-admin.instaudio.com.mx/index.php`
+let HOST = `http://localhost/api-admin/index.php`
 
 module.exports = {
     LOGIN : `${HOST}/admin/login`,
@@ -53,4 +53,6 @@ module.exports = {
     DELETE_USER : `${HOST}/usuarios/delete`,
     ONE_USER : `${HOST}/usuarios/one`,
     SAVE_USER : `${HOST}/usuarios/save`,
+
+    ADD_XML : `${HOST}/importar/inventarioxml`,
 }

@@ -27,6 +27,9 @@ import AddProducto from './AddProducto'
 import DialogHistoryPrice from '../CrearInventarioEntrada/DialogHistoryPrice'
 import Hotkeys from 'react-hot-keys'
 
+import SweetAlert from 'sweetalert2-react';
+import Swal from 'sweetalert2'
+
 const styles = {
     underline : {
         backgroundColor : '#000'
@@ -43,6 +46,7 @@ const styles = {
 }
 
 class Crear extends React.Component {
+    
     state = { 
         list : [],
         factura : '', 
@@ -84,6 +88,7 @@ class Crear extends React.Component {
             _total
         })
     }
+  
 
     handleChangeInput = name => event => {
         this.setState({
@@ -166,6 +171,7 @@ class Crear extends React.Component {
                 iva : _iva,
                 total:  _total
             }
+            
             axios.post(ADD_SALE, params)
             .then(({data}) => {
                 if(data.status === 200){
@@ -179,12 +185,81 @@ class Crear extends React.Component {
                     toastr.error(UNEXPECTED)
                 }
             })
+
+            this.cambio(_total).then(()=>{
+                setTimeout(function() {
+                    const swalWithBootstrapButtons = Swal.mixin({
+                        customClass: {
+                          confirmButton: 'btn btn-success',
+                          cancelButton: 'btn btn-danger'
+                        },
+                        buttonsStyling: false,
+                      })
+                      
+                      swalWithBootstrapButtons.fire({
+                        title: 'Desea confirmar la venta?',
+                        text: "",
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Confirmar',
+                        cancelButtonText: 'Cancelar',
+                        reverseButtons: true
+                      }).then((result) => {
+                        if (result.value) {
+                          swalWithBootstrapButtons.fire(
+                            'Venta Realizada',
+                            'Se ha realizado la venta correctamente',
+                            'success'
+                          )
+                          axios.post(ADD_SALE, params)
+                          .then(({data}) => {
+                              if(data.status === 200){
+                             toastr.success(`Se guardo con éxito`)
+                             window.location.reload();
+                              }
+                              else if(data.message){
+                                  toastr.error(data.message)
+                              }
+                              else {
+                                  toastr.error(UNEXPECTED)
+                              }
+                          })
+                        } else if (
+                          // Read more about handling dismissals
+                          result.dismiss === Swal.DismissReason.cancel
+                        ) {
+                          swalWithBootstrapButtons.fire(
+                            'Cancelado',
+                            'La venta ha sido cancelada',
+                            'error'
+                          )
+                        }
+                      })
+                 }, 5000)
+            })
+           
         }
     }
 
+   async cambio(total) {
+        const {value: number} = await Swal.fire({
+            title: 'Ingrese el efectivo',
+            input: 'number',
+            inputPlaceholder: 'Ingrese efectivo'
+          })
+          
+          if (number) {
+              let resultado;
+              resultado = number-total;
+              Swal.fire(
+                  'EL cambio es: ' + resultado
+            )
+          }
+    }
     cotizar(e){
         e.preventDefault()
     }
+
 
     add(){
         /**/
@@ -202,27 +277,37 @@ class Crear extends React.Component {
     }
 
     async handleAddProduct({ id_producto, precio_compra, precio_venta }){
+        let cantidad_producto = 0;
         let list = this.state.list
         let exists = this.state.list.filter((p) => p.id_producto == id_producto).length > 0
         if(!exists){
+            let  estado_inventario;
             let product = (await axios.post(ONE_PRODUCTS, { id: id_producto })).data
-            list.push({ 
-                id_producto, 
-                codigo : product.codigo, 
-                image : product.photos[0] || '', 
-                producto : product.nombre, 
-                cantidad : 0, 
-                placeholder_compra : precio_compra, 
-                placeholder_venta : product.precios,
-                inventario : product.inventario ,
-                isPromocion : product.isPromocion == 1,
-                descripcion : product.descripcion,
-                tipo_precio : 'Menudeo'
-            })
-            this.setState({
-                list,
-                openAddProduct : false
-            })
+            if(product.inventario == 0){
+                Swal.fire('Este producto no cuenta con una cantidad adecuada en el inventario para vender')
+                this.setState({
+                    openAddProduct : false
+                })
+            }else{
+                if(product.inventario == 0){ estado_inventario = 'INEDITABLE'; cantidad_producto =0;} else {estado_inventario = product.inventario; cantidad_producto = 1;}
+                list.push({ 
+                    id_producto, 
+                    codigo : product.codigo, 
+                    image : product.photos[0] || '', 
+                    producto : product.nombre, 
+                    cantidad : cantidad_producto, 
+                    placeholder_compra : precio_compra, 
+                    placeholder_venta : product.precios,
+                    inventario :  estado_inventario,
+                    isPromocion : product.isPromocion == 1,
+                    descripcion : product.descripcion,
+                    tipo_precio : 'Menudeo'
+                })
+                this.setState({
+                    list,
+                    openAddProduct : false
+                })
+            }
         }else{
             toastr.error('Este producto ya esta en la lista')
         }
