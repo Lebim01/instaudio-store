@@ -81,7 +81,7 @@ const NotificatioButon = () => (
         xsmall={
             <MenuItem
                 onClick={()=> {
-                    window.location.href = '#/notificaciones'
+                    window.location.href = '/notificaciones'
                 }}
                 style={{color : theme.palette.primary.contrastText }}
             >
@@ -92,7 +92,7 @@ const NotificatioButon = () => (
         medium={
             <Button
                 onClick={()=> {
-                    window.location.href = '#/notificaciones'
+                    window.location.href = '/notificaciones'
                 }}
                 style={{color : theme.palette.primary.contrastText }}
                 size="small"

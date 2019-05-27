@@ -15,8 +15,6 @@ import {
 } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add'
 import Swal from 'sweetalert2'
-import toastr from 'toastr'
-import { UNEXPECTED } from './../dictionary'
 
 const styles = theme => ({
     root: {
@@ -76,50 +74,32 @@ class Inventario extends React.Component {
         })
     }
     
-    async  AddtoXML() {
+    async AddtoXML() {
         const {value: file} = await Swal.fire({
             title: 'Seleccionar Archivo',
             input: 'file',
             inputAttributes: {
-              'aria-label': 'Upload your profile picture'
-            }
-          })
-          
-          if (file) {
-            const reader = new FileReader
-            reader.onload = (e) => {
-              Swal.fire({
-                title: 'Se ha cargado el archivo',
-                imageUrl: e.target.result,
-                imageAlt: e.target.result
-              })
-              ///solo muestra base64
-              const cadena = e.target.result;
-              const nuevo = cadena.substr(21,);
-              axios.post(ADD_XML, {nuevo: nuevo})
-              .then(() => {
-                
-              })
-            }
-            reader.readAsDataURL(file)
-            console.log(file)
-          }
-    }
-
-    pruebaXMl() {
-        axios.post(ADD_XML)
-        .then(({data}) => {
-            if(data.status === 200){
-                toastr.success(`Se guardo con éxito`)
-                window.location.reload();
-            }
-            else if(data.message){
-                toastr.error(data.message)
-            }
-            else {
-                toastr.error(UNEXPECTED)
+                'aria-label': 'Sube un archivo xml'
             }
         })
+          
+        if (file) {
+            const reader = new FileReader
+            reader.onload = (e) => {
+                Swal.fire({
+                    title: 'Se ha cargado el archivo'
+                })
+                ///solo muestra base64
+                const cadena = e.target.result;
+                axios.post(ADD_XML, {archivo: cadena})
+                .then(({data}) => {
+                    if(data.status == 200){
+                        Swal.fire('Subir xml', 'Subido correctamente', 'success')
+                    }
+                })
+            }
+            reader.readAsDataURL(file)
+        }
     }
 
     RowFormat = props => (
@@ -158,11 +138,9 @@ class Inventario extends React.Component {
                     headerColor='blue'
                     content = {
                         <div> 
-                           <input type="file" name="archivo"></input>
-                            
-                             <Button color="success" onClick={this.AddtoXML}>
-                                            Subir Archivo
-                                        </Button>
+                            <Button color="success" onClick={this.AddtoXML}>
+                                Subir Archivo
+                            </Button>
                             <Tooltip title="Agregar">
                                 <Fab variant="fab" color="inherent" aria-label="Add" size="small" style={{float:'right', backgroundColor : 'green', color : 'white'}} onClick={this.goAdd}>
                                     <AddIcon />
