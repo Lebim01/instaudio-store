@@ -59,7 +59,7 @@ class Crear extends React.Component {
     }
 
     goList(){
-        window.location = '/marcas'
+        window.location.href = '/#/marcas'
     }
 
     save(e){

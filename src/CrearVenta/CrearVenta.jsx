@@ -27,7 +27,6 @@ import AddProducto from './AddProducto'
 import DialogHistoryPrice from '../CrearInventarioEntrada/DialogHistoryPrice'
 import Hotkeys from 'react-hot-keys'
 
-import SweetAlert from 'sweetalert2-react';
 import Swal from 'sweetalert2'
 
 const styles = {

@@ -262,7 +262,7 @@ class CrearProductos extends React.Component {
                     let id_producto = r.data.id_producto
                     await this.uploadImages(this.state.photos, id_producto)
                     toastr.success(`Producto creado correctamente`)
-                    window.location = '/productos'
+                    window.location.href = '/#/productos'
                 }else if(r.data.message){
                     toastr.error(r.data.message)
                     this.setState({
