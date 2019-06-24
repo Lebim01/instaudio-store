@@ -29,7 +29,7 @@ const styles = theme => ({
 });
 
 const goAdd = () => {
-    window.location = '#/clientes/create'
+    window.location = '/clientes/create'
 }
 
 const columnData = [

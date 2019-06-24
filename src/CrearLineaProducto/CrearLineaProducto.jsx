@@ -46,7 +46,7 @@ class Crear extends React.Component {
     }
 
     goList(){
-        window.location = '#/lineasproductos'
+        window.location = '/lineasproductos'
     }
 
     save(e){
