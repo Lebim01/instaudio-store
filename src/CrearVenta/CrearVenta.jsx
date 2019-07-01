@@ -88,7 +88,6 @@ class Crear extends React.Component {
         })
     }
   
-
     handleChangeInput = name => event => {
         this.setState({
             [name]: event.target.value
@@ -255,10 +254,10 @@ class Crear extends React.Component {
             )
           }
     }
+
     cotizar(e){
         e.preventDefault()
     }
-
 
     add(){
         /**/
@@ -317,7 +316,7 @@ class Crear extends React.Component {
         list = list.filter((p) => p.id_producto != id_producto)
         this.setState({
             list
-        })
+        }, () => this.calculateTotals())
     }
 
     round(value){
