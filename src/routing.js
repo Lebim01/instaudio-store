@@ -13,6 +13,7 @@ module.exports = {
     ADD_SALE : `${HOST}/ventas/save`,
     LIST_SELL : `${HOST}/ventas/list`,
     SELL_ONE : `${HOST}/ventas/one`,
+    COTIZAR : `${HOST}/ventas/saveCotizacion`,
 
     LIST_LINEAS : `${HOST}/lineas/list`,
     ONE_LINEAS : `${HOST}/lineas/one`,
@@ -20,6 +21,8 @@ module.exports = {
     DELETE_LINEAS : `${HOST}/lineas/delete`,
 
     LIST_PRODUCTS : `${HOST}/productos/list`,
+    PRICES : `${HOST}/productos/precios`,
+    CHANGE_PRICES : `${HOST}/productos/changePrices`,
     CHANGE_STATUS_PRODUCTS : `${HOST}/productos/status`,
     SAVE_PRODUCTS : `${HOST}/productos/save`,
     DELETE_PRODUCTS : `${HOST}/productos/delete`,

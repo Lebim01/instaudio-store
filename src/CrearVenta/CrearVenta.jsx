@@ -20,7 +20,7 @@ import {
 import './CrearVenta.css'
 import axios from 'axios'
 import toastr from 'toastr'
-import { ADD_SALE, ONE_PRODUCTS, GET_PRODUCT_CODE, SUGGESTED_PRICES } from './../routing'
+import { ADD_SALE, ONE_PRODUCTS, GET_PRODUCT_CODE, SUGGESTED_PRICES, COTIZAR } from './../routing'
 import { UNEXPECTED } from './../dictionary'
 import DialogAddProduct from './DialogAddProduct';
 import AddProducto from './AddProducto'
@@ -255,8 +255,46 @@ class Crear extends React.Component {
           }
     }
 
-    cotizar(e){
+    cotizar = async (e) => {
         e.preventDefault()
+
+        const _products = this.state.list
+        const { factura, cliente, descuento, _descuento, _subtotal, _iva, _total } = this.state
+        const params = {
+            productos: _products, 
+            token : localStorage.getItem('token'),
+            factura,
+            cliente,
+            descuento_porcentaje : descuento,
+
+            descuento : _descuento,
+            subtotal : _subtotal,
+            iva : _iva,
+            total:  _total
+        }
+
+        function cotizarAjax(){
+            return axios.post(COTIZAR, params)
+                .then(response => {
+                    return response.json()
+                })
+                .catch(error => {
+                    Swal.showValidationMessage(`Request failed: ${error}`)
+                })
+        }
+
+        Swal.fire({
+            title: 'Confirmar',
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar',
+            showLoaderOnConfirm: true,
+            preConfirm: cotizarAjax,
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.value) {
+                Swal.fire('Guardado', 'Se cotizo con éxito', 'success')
+            }
+        })
     }
 
     add(){
@@ -561,7 +599,7 @@ class Crear extends React.Component {
                                         <Button color="success" onClick={this.save} disabled={!isValid}>
                                             Vender
                                         </Button>
-                                        <Button color="success" onClick={this.cotizar} disabled={true}>
+                                        <Button color="success" onClick={this.cotizar}>
                                             Cotizar
                                         </Button>
                                     </div>

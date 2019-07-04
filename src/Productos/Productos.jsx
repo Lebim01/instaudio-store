@@ -1,13 +1,14 @@
 import React from 'react';
 import { withStyles } from 'material-ui/styles';
 import { UNEXPECTED } from './../dictionary'
-import { LIST_PRODUCTS, CHANGE_STATUS_PRODUCTS, DELETE_PRODUCTS, CHANGE_PRICE_PRODUCTS } from './../routing'
+import { LIST_PRODUCTS, CHANGE_STATUS_PRODUCTS, DELETE_PRODUCTS, CHANGE_PRICES, PRICES } from './../routing'
 import axios from 'axios'
 import TableUI from './../components/TableUI'
 import {
     RegularCard
 } from './../components';
 import Loader from 'react-loader'
+import { Button as ButtonReact, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Label, Input } from 'reactstrap';
 
 // COMPONENTS
 import { TableCell, TableRow } from 'material-ui/Table';
@@ -26,6 +27,7 @@ import TrashIcon from '@material-ui/icons/Delete';
 import ErrorIcon from '@material-ui/icons/Error';
 import AddIcon from '@material-ui/icons/Add';
 import MoneyIcon from '@material-ui/icons/AttachMoney';
+import Swal from 'sweetalert2';
 
 // BEGIN HEADER
 
@@ -59,16 +61,98 @@ const columnData = [
     { id: 'actions', label : 'Acciones', sortable : false, style : { minWidth : 150 } }
 ];
 
-class Productos extends React.Component {
-    state = { data : [], loading : true }
+class EditarPrecio extends React.Component {
+
+    state = {}
 
     constructor(props){
         super(props)
+        this.onChange = this.onChange.bind(this)
+        this.save = this.save.bind(this)
+    }
 
-        this.goEdit = this.goEdit.bind(this)
+    componentWillReceiveProps(props){
+        axios.post(PRICES, { id: props.id_producto })
+        .then((r) => {
+            let state = {}
+            for(let i in r.data){
+                let row = r.data[i]
+                state[row.tipo.toLowerCase()] = Number(row.precio)
+            }
+            this.setState({
+                ...state
+            })
+        })
+    }
+
+    onChange = name => (e) => {
+        this.setState({
+            [name] : e.target.value
+        })
+    }
+
+    save(){
+        axios.post(CHANGE_PRICES, { ...this.state, id_producto: this.props.id_producto })
+        .then((r) => {
+            this.setState({
+                mayoreo: 0,
+                menudeo: 0,
+                semimenudeo: 0
+            })
+            Swal.fire('Precios', 'Guardados', 'success')
+            this.props.toggle()
+        })
+    }
+
+    render(){
+        return (
+            <Modal isOpen={this.props.open} toggle={this.props.toggle} className={this.props.className}>
+                <ModalHeader toggle={this.props.toggle}>Cambiar de precio</ModalHeader>
+                <ModalBody>
+                    <Row className="form-group">
+                        <Col xs="4">
+                            <Label>Mayoreo</Label>
+                        </Col>
+                        <Col xs="8">
+                            <Input className="form-control" type="number" value={this.state.mayoreo} onChange={this.onChange('mayoreo')} />
+                        </Col>
+                    </Row>
+                    <Row className="form-group">
+                        <Col xs="4">
+                            <Label>Semimenudeo</Label>
+                        </Col>
+                        <Col xs="8">
+                            <Input className="form-control" type="number" value={this.state.semimenudeo} onChange={this.onChange('semimenudeo')} />
+                        </Col>
+                    </Row>
+                    <Row className="form-group">
+                        <Col xs="4">
+                            <Label>Menudeo</Label>
+                        </Col>
+                        <Col xs="8">
+                            <Input className="form-control" type="number" value={this.state.menudeo} onChange={this.onChange('menudeo')} />
+                        </Col>
+                    </Row>
+                </ModalBody>
+                <ModalFooter>
+                    <ButtonReact color="primary" onClick={this.save}>Guardar</ButtonReact>{' '}
+                    <ButtonReact color="secondary" onClick={this.props.toggle}>Cancelar</ButtonReact>
+                </ModalFooter>
+            </Modal>
+        )
+    }
+}
+
+class Productos extends React.Component {
+    state = { data : [], loading : true, modal : { open: false } }
+
+    constructor(props){
+        super(props)
         this.goAdd = this.goAdd.bind(this)
-        this._changeStatus = this._changeStatus.bind(this)
+        this.goEdit = this.goEdit.bind(this)
+        this.toggle = this.toggle.bind(this)
         this._delete = this._delete.bind(this)
+        this._changeStatus = this._changeStatus.bind(this)
         this.loadProductos = this.loadProductos.bind(this)
     }
 
@@ -133,37 +217,6 @@ class Productos extends React.Component {
         }
     }
 
-    goEditPrice = (e, props) => {
-        e.preventDefault()
-        swal({
-            text: 'Cambiar precio',
-            content: {
-                element : "input",
-                attributes : {
-                    type : 'number'
-                }
-            },
-            button: {
-                text: "Aceptar",
-                closeModal: false,
-                className : 'btn-success',
-                
-            },
-        })
-        .then((r) => {
-            let price = parseFloat(r) || 0
-            if(price > 0){
-                axios.post(CHANGE_PRICE_PRODUCTS, { id : props.id, price, token : localStorage.getItem('token') })
-                .then((res) => {
-                    swal("Exito", "Se guardo correctamente", "success");
-                    this.loadProductos()
-                })
-            }else{
-                swal("Error", "El precio debe ser mayor a 0", "error");
-            }
-        })
-    }
-
     RowFormat = props => {
         return (
             <TableRow
@@ -199,7 +252,7 @@ class Productos extends React.Component {
                 <TableCell numeric>{props.precio_venta}</TableCell>
                 <TableCell>
                     <Tooltip title="Cambiar Precio de Venta">
-                        <Button variant="fab" color="green" aria-label="AttachMoney" mini style={{backgroundColor : 'green', color : 'white'}} onClick={(e) => this.goEditPrice(e, props)}>
+                        <Button variant="fab" color="green" aria-label="AttachMoney" mini style={{backgroundColor : 'green', color : 'white'}} onClick={(e) => this.toggle(props.id)}>
                             <MoneyIcon />
                         </Button>
                     </Tooltip>
@@ -265,6 +318,16 @@ class Productos extends React.Component {
         })
     }
 
+    toggle(id_producto){
+        this.setState({
+            modal : {
+                ...this.state.modal, 
+                id_producto: id_producto,
+                open: !this.state.modal.open 
+            }
+        })
+    }
+
     render(){
         const { data, loading } = this.state
 
@@ -275,6 +338,8 @@ class Productos extends React.Component {
                     trail={60} shadow={false} hwaccel={false} className="spinner"
                     zIndex={2e9} top="50%" left="50%" scale={1.00}
                     loadedClassName="loadedContent" />
+
+                <EditarPrecio {...this.state.modal} toggle={this.toggle} />
 
                 <RegularCard
                     cardTitle="Listado de Productos"
