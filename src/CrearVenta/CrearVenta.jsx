@@ -74,7 +74,9 @@ class Crear extends React.Component {
 
     calculateTotals(){
         const { list } = this.state
-        const _subtotal = this.round(list.reduce((a, b) => a + (b.cantidad * (b.precio_venta || b.placeholder_venta[b.tipo_precio])), 0) || 0)
+        const _subtotal = this.round(list.reduce((a, b) => {
+            return a + (b.cantidad * (b.precio_venta || b.placeholder_venta[b.tipo_precio]))
+        }, 0) || 0)
         const _iva = this.round(_subtotal * 0.16)
         const _descuento = this.round((_subtotal + _iva) * (this.state.descuento / 100))
         const _total = this.round(_subtotal + _iva - _descuento)
@@ -276,7 +278,7 @@ class Crear extends React.Component {
         function cotizarAjax(){
             return axios.post(COTIZAR, params)
                 .then(response => {
-                    return response.json()
+                    return response
                 })
                 .catch(error => {
                     Swal.showValidationMessage(`Request failed: ${error}`)
@@ -293,6 +295,9 @@ class Crear extends React.Component {
         }).then((result) => {
             if (result.value) {
                 Swal.fire('Guardado', 'Se cotizo con éxito', 'success')
+                if(result.value.data.url){
+                    window.open(result.value.data.url, '_blank')
+                }
             }
         })
     }
@@ -342,7 +347,7 @@ class Crear extends React.Component {
                 this.setState({
                     list,
                     openAddProduct : false
-                })
+                }, this.calculateTotals)
             }
         }else{
             toastr.error('Este producto ya esta en la lista')
