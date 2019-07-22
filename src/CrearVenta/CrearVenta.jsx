@@ -157,13 +157,15 @@ class Crear extends React.Component {
     save(e){
         e.preventDefault()
         const _products = this.state.list
-        const { factura, cliente, descuento, _descuento, _subtotal, _iva, _total } = this.state
+        const { factura, cliente, email, celular, descuento, _descuento, _subtotal, _iva, _total } = this.state
         if(_products.length > 0){
             const params = {
                 productos: _products, 
                 token : localStorage.getItem('token'),
                 factura,
                 cliente,
+                email,
+                celular,
                 descuento_porcentaje : descuento,
 
                 descuento : _descuento,
@@ -439,6 +441,24 @@ class Crear extends React.Component {
                                             </Grid>
                                             <Grid item xs={12} md={4} className={styles.paper}>
                                                 <TextField
+                                                    label="% Descuento"
+                                                    className={styles.textField}
+                                                    value={descuento}
+                                                    placeholder="0-100 %"
+                                                    onChange={this.handleChangeInput('descuento')}
+                                                    fullWidth
+                                                    InputProps={{
+                                                        type :"number"
+                                                    }}
+                                                    InputLabelProps={{
+                                                        shrink: true,
+                                                    }}
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                        <Grid container spacing={24} className={styles.row}>
+                                            <Grid item xs={12} md={4} className={styles.paper}>
+                                                <TextField
                                                     label="Cliente"
                                                     className={styles.textField}
                                                     value={cliente}
@@ -451,15 +471,23 @@ class Crear extends React.Component {
                                             </Grid>
                                             <Grid item xs={12} md={4} className={styles.paper}>
                                                 <TextField
-                                                    label="% Descuento"
+                                                    label="Email"
                                                     className={styles.textField}
-                                                    value={descuento}
-                                                    placeholder="0-100 %"
-                                                    onChange={this.handleChangeInput('descuento')}
+                                                    value={this.state.email}
+                                                    onChange={this.handleChangeInput('email')}
                                                     fullWidth
-                                                    InputProps={{
-                                                        type :"number"
+                                                    InputLabelProps={{
+                                                        shrink: true,
                                                     }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} md={4} className={styles.paper}>
+                                                <TextField
+                                                    label="Celular"
+                                                    className={styles.textField}
+                                                    value={this.state.celular}
+                                                    onChange={this.handleChangeInput('celular')}
+                                                    fullWidth
                                                     InputLabelProps={{
                                                         shrink: true,
                                                     }}
