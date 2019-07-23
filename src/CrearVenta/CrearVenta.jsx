@@ -25,8 +25,9 @@ import { UNEXPECTED } from './../dictionary'
 import DialogAddProduct from './DialogAddProduct';
 import AddProducto from './AddProducto'
 import DialogHistoryPrice from '../CrearInventarioEntrada/DialogHistoryPrice'
+import DialogAddConcepto from './DialogAddConcepto'
+import ConceptoRow from './ConceptoRow'
 import Hotkeys from 'react-hot-keys'
-
 import Swal from 'sweetalert2'
 
 const styles = {
@@ -48,14 +49,17 @@ class Crear extends React.Component {
     
     state = { 
         list : [],
+        conceptos : [],
         factura : '', 
         cliente : 'CLIENTE DE MOSTRADOR', 
         producto : '',
         descuento : '',
-        openAddProduct : false,
         historyPrices : [],
         codigo : '',
-        errorCode : ''
+        errorCode : '',
+
+        openAddProduct : false,
+        openAddConcepto : false,
     }
 
     constructor(props){
@@ -64,7 +68,10 @@ class Crear extends React.Component {
         this.add = this.add.bind(this)
         this.save = this.save.bind(this)
         this.goList = this.goList.bind(this)
+        this.addConcepto = this.addConcepto.bind(this)
         this.handleChange = this.handleChange.bind(this)
+        this.saveConcepto = this.saveConcepto.bind(this)
+        this.closeConcepto = this.closeConcepto.bind(this)
         this.deleteProduct = this.deleteProduct.bind(this)
         this.handleAddProduct = this.handleAddProduct.bind(this)
         this.handleCloseAddProduct = this.handleCloseAddProduct.bind(this)
@@ -73,7 +80,7 @@ class Crear extends React.Component {
     }
 
     calculateTotals(){
-        const { list } = this.state
+        const { list, conceptos } = this.state
         const _subtotal = this.round(list.reduce((a, b) => {
             return a + (b.cantidad * (b.precio_venta || b.placeholder_venta[b.tipo_precio]))
         }, 0) || 0)
@@ -81,12 +88,16 @@ class Crear extends React.Component {
         const _descuento = this.round((_subtotal + _iva) * (this.state.descuento / 100))
         const _total = this.round(_subtotal + _iva - _descuento)
 
+        const _total_conceptos = conceptos.reduce((a,b) => a + (b.precio || 0), 0) || 0
+
+        console.log(_total, _total_conceptos)
+
         this.setState({
             list,
             _subtotal,
             _iva,
             _descuento,
-            _total
+            _total : _total + _total_conceptos
         })
     }
   
@@ -157,10 +168,11 @@ class Crear extends React.Component {
     save(e){
         e.preventDefault()
         const _products = this.state.list
-        const { factura, cliente, email, celular, descuento, _descuento, _subtotal, _iva, _total } = this.state
+        const { factura, conceptos, cliente, email, celular, descuento, _descuento, _subtotal, _iva, _total } = this.state
         if(_products.length > 0){
             const params = {
                 productos: _products, 
+                conceptos : conceptos,
                 token : localStorage.getItem('token'),
                 factura,
                 cliente,
@@ -243,20 +255,18 @@ class Crear extends React.Component {
         }
     }
 
-   async cambio(total) {
+    cambio = async (total) => {
         const {value: number} = await Swal.fire({
             title: 'Ingrese el efectivo',
             input: 'number',
             inputPlaceholder: 'Ingrese efectivo'
-          })
+        })
           
-          if (number) {
-              let resultado;
-              resultado = number-total;
-              Swal.fire(
-                  'EL cambio es: ' + resultado
-            )
-          }
+        if (number) {
+            let resultado;
+            resultado = number-total;
+            Swal.fire('EL cambio es: ' + resultado)
+        }
     }
 
     cotizar = async (e) => {
@@ -389,6 +399,31 @@ class Crear extends React.Component {
         }
     }
 
+    closeConcepto(){
+        this.setState({
+            openAddConcepto : false
+        })
+    }
+
+    addConcepto(){
+        this.setState({
+            openAddConcepto : true
+        })
+    }
+
+    saveConcepto({ precio, concepto }){
+        this.setState({
+            openAddConcepto : false,
+            conceptos : [
+                ...this.state.conceptos,
+                {
+                    concepto,
+                    precio
+                }
+            ]
+        })
+    }
+
     render(){
         const { list, factura, cliente, descuento, _subtotal, _iva, _total, _descuento, codigo, errorCode } = this.state
         const { black } = this.props
@@ -408,6 +443,12 @@ class Crear extends React.Component {
                         open={this.state.openAddProduct}
                         handleClose={this.handleCloseAddProduct}
                         handleAdd={this.handleAddProduct}
+                    />
+
+                    <DialogAddConcepto
+                        open={this.state.openAddConcepto}
+                        save={this.saveConcepto}
+                        close={this.closeConcepto}
                     />
 
                     <DialogHistoryPrice
@@ -513,7 +554,6 @@ class Crear extends React.Component {
                                                     InputProps={{
                                                         startAdornment : 
                                                             <InputAdornment position="start">
-                                                                {/* CODIGO DE BARRAS FONTAWESOME */}
                                                                 <i className="fa fa-barcode"></i>
                                                             </InputAdornment>
                                                     }}
@@ -522,6 +562,9 @@ class Crear extends React.Component {
                                             <Grid item xs={12} md={4} className={styles.paper}>
                                                 <Button classes={{ button: 'text-body primary' }} onClick={this.add}>
                                                     Agregar Producto &nbsp;&nbsp;<i className="fa fa-plus"></i>
+                                                </Button>
+                                                <Button classes={{ button: 'text-body secondary' }} onClick={this.addConcepto}>
+                                                    Agregar Concepto &nbsp;&nbsp;<i className="fa fa-plus"></i>
                                                 </Button>
                                             </Grid>
                                         </Grid>
@@ -567,6 +610,13 @@ class Crear extends React.Component {
                                                         openModalHistoryPrice={this.openModalHistoryPrice}
                                                     /> 
                                                 ) }
+                                                { this.state.conceptos.map((props, i) =>
+                                                    <ConceptoRow
+                                                        key={i}
+                                                        index={i}
+                                                        {...props}
+                                                    />
+                                                )}
                                             </TableBody>
                                         </Table>
                                         <Grid container spacing={24} className={styles.row}>
