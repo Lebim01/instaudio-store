@@ -249,7 +249,7 @@ class Productos extends React.Component {
                     }
                 </TableCell>
                 <TableCell>{ props.codigo }</TableCell>
-                <TableCell numeric>{props.precio_venta}</TableCell>
+                <TableCell numeric>{Math.round(props.precio_venta*1.16*100)/100}</TableCell>
                 <TableCell>
                     <Tooltip title="Cambiar Precio de Venta">
                         <Button variant="fab" color="green" aria-label="AttachMoney" mini style={{backgroundColor : 'green', color : 'white'}} onClick={(e) => this.toggle(props.id)}>
