@@ -88,9 +88,7 @@ class Crear extends React.Component {
         const _descuento = this.round((_subtotal + _iva) * (this.state.descuento / 100))
         const _total = this.round(_subtotal + _iva - _descuento)
 
-        const _total_conceptos = conceptos.reduce((a,b) => a + (b.precio || 0), 0) || 0
-
-        console.log(_total, _total_conceptos)
+        const _total_conceptos = this.round(conceptos.reduce((a,b) => a + (b.precio || 0), 0) || 0)
 
         this.setState({
             list,
@@ -375,7 +373,7 @@ class Crear extends React.Component {
     }
 
     round(value){
-        return Math.round(value * 100) / 100
+        return Math.round(Number(value) * 100) / 100
     }
 
     openModalHistoryPrice(data){
