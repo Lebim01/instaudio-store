@@ -62,24 +62,7 @@ class Crear extends React.Component {
         openAddConcepto : false,
     }
 
-    constructor(props){
-        super(props)
-
-        this.add = this.add.bind(this)
-        this.save = this.save.bind(this)
-        this.goList = this.goList.bind(this)
-        this.addConcepto = this.addConcepto.bind(this)
-        this.handleChange = this.handleChange.bind(this)
-        this.saveConcepto = this.saveConcepto.bind(this)
-        this.closeConcepto = this.closeConcepto.bind(this)
-        this.deleteProduct = this.deleteProduct.bind(this)
-        this.handleAddProduct = this.handleAddProduct.bind(this)
-        this.handleCloseAddProduct = this.handleCloseAddProduct.bind(this)
-        this.openModalHistoryPrice = this.openModalHistoryPrice.bind(this)
-        this.handleCloseHistoryPrice = this.handleCloseHistoryPrice.bind(this)
-    }
-
-    calculateTotals(){
+    calculateTotals = () => {
         const { list, conceptos } = this.state
         const _subtotal = this.round(list.reduce((a, b) => {
             return a + (b.cantidad * (b.precio_venta || b.placeholder_venta[b.tipo_precio]))
@@ -114,7 +97,7 @@ class Crear extends React.Component {
         }, () => this.calculateTotals())
     }
 
-    goList(){
+    goList = () => {
         this.props.history.push({
             pathname : '/ventas'
         })
@@ -163,7 +146,7 @@ class Crear extends React.Component {
         }
     }
 
-    save(e){
+    save = (e) => {
         e.preventDefault()
         const _products = this.state.list
         const { factura, conceptos, cliente, email, celular, descuento, _descuento, _subtotal, _iva, _total } = this.state
@@ -271,9 +254,10 @@ class Crear extends React.Component {
         e.preventDefault()
 
         const _products = this.state.list
-        const { factura, cliente, descuento, _descuento, _subtotal, _iva, _total } = this.state
+        const { factura, cliente, descuento, conceptos, _descuento, _subtotal, _iva, _total } = this.state
         const params = {
-            productos: _products, 
+            productos: _products,
+            conceptos: conceptos,
             token : localStorage.getItem('token'),
             factura,
             cliente,
@@ -312,7 +296,7 @@ class Crear extends React.Component {
         })
     }
 
-    add(){
+    add = () => {
         /**/
         
         // OPEN MODAL
@@ -321,13 +305,13 @@ class Crear extends React.Component {
         })
     }
 
-    handleCloseAddProduct(){
+    handleCloseAddProduct = () => {
         this.setState({
             openAddProduct : false
         })
     }
 
-    async handleAddProduct({ id_producto, precio_compra, precio_venta }){
+    handleAddProduct = async ({ id_producto, precio_compra, precio_venta }) => {
         let cantidad_producto = 0;
         let list = this.state.list
         let exists = this.state.list.filter((p) => p.id_producto == id_producto).length > 0
@@ -364,7 +348,7 @@ class Crear extends React.Component {
         }
     }
 
-    deleteProduct(id_producto){
+    deleteProduct = (id_producto) => {
         let list = this.state.list
         list = list.filter((p) => p.id_producto != id_producto)
         this.setState({
@@ -376,14 +360,14 @@ class Crear extends React.Component {
         return Math.round(Number(value) * 100) / 100
     }
 
-    openModalHistoryPrice(data){
+    openModalHistoryPrice = (data) => {
         this.setState({
             openHistoryPrice : true,
             historyPrices : data
         })
     }
 
-    handleCloseHistoryPrice(){
+    handleCloseHistoryPrice = () => {
         this.setState({
             openHistoryPrice : false
         })
@@ -397,19 +381,19 @@ class Crear extends React.Component {
         }
     }
 
-    closeConcepto(){
+    closeConcepto = () => {
         this.setState({
             openAddConcepto : false
         })
     }
 
-    addConcepto(){
+    addConcepto = () => {
         this.setState({
             openAddConcepto : true
         })
     }
 
-    saveConcepto({ precio, concepto }){
+    saveConcepto = ({ precio, concepto }) => {
         this.setState({
             openAddConcepto : false,
             conceptos : [
