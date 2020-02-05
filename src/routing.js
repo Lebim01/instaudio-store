@@ -1,4 +1,4 @@
-let HOST = `http://api-admin.instaudio.com.mx/index.php`
+let HOST = `http://api-admin.instaudio.com.mx:8080/index.php`
 
 module.exports = {
     LOGIN : `${HOST}/admin/login`,
