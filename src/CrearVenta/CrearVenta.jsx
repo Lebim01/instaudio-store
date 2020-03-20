@@ -254,13 +254,15 @@ class Crear extends React.Component {
         e.preventDefault()
 
         const _products = this.state.list
-        const { factura, cliente, descuento, conceptos, _descuento, _subtotal, _iva, _total } = this.state
+        const { factura, cliente, descuento, conceptos, _descuento, _subtotal, _iva, _total, email, celular } = this.state
         const params = {
             productos: _products,
             conceptos: conceptos,
             token : localStorage.getItem('token'),
             factura,
             cliente,
+            email,
+            celular,
             descuento_porcentaje : descuento,
 
             descuento : _descuento,
