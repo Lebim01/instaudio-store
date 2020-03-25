@@ -39,6 +39,9 @@ import VentasIcon from '@material-ui/icons/CreditCard'
 import Ventas from './Ventas'
 import VerVenta from './VerVenta'
 import CrearVenta from './CrearVenta'
+// Cotizaciones
+import Cotizaciones from './Cotizaciones'
+import VerCotizacion from './VerCotizacion'
 // Usuarios
 import UsuariosIcon from '@material-ui/icons/SupervisorAccount'
 import Usuarios from './Usuarios'
@@ -188,6 +191,14 @@ const resources = {
             edit={VerVenta}
             icon={VentasIcon}
             options={{ label: 'Ventas' }}/>
+    ),
+    cotizaciones : (
+        <Resource 
+            name="cotizaciones" 
+            list={Cotizaciones}
+            edit={VerCotizacion}
+            icon={VentasIcon}
+            options={{ label: 'Cotizaciones' }}/>
     ),
     usuarios : (
         <Resource 

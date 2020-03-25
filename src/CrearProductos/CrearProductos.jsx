@@ -96,6 +96,7 @@ class CrearProductos extends React.Component {
         palabrasclave : [],
         nombre : '',
         codigo : '',
+        codigo_producto : '',
         descripcion : '',
         linea : 0,
         marca : 0,
@@ -128,6 +129,7 @@ class CrearProductos extends React.Component {
                         linea : r.data.id_linea,
                         marca : r.data.id_marca,
                         codigo : r.data.codigo,
+                        codigo_producto : r.data.codigo_producto,
                         photos_saved : r.data.photos,
                         palabrasclave : r.data.palabrasclave,
                         isBox : r.data.isBox == 1,
@@ -244,6 +246,7 @@ class CrearProductos extends React.Component {
                 marca : this.state.marca,
                 id : this.state.id,
                 codigo : this.state.codigo,
+                codigo_producto : this.state.codigo_producto,
                 palabrasclave : this.state.palabrasclave,
                 isBox : this.state.isBox,
                 cantidad_unidades : this.state.cantidad_unidades,
@@ -283,7 +286,7 @@ class CrearProductos extends React.Component {
 
     render() {
         const { classes, theme } = this.props;
-        const { validStep1, validStep2, nombre, descripcion, codigo, linea, marca, photos, photos_saved, palabrasclave, isBox, cantidad_unidades, loading, errorMessage } = this.state
+        const { validStep1, validStep2, nombre, descripcion, codigo, codigo_producto, linea, marca, photos, photos_saved, palabrasclave, isBox, cantidad_unidades, loading, errorMessage } = this.state
         const { isPromocion, promocion_desde, promocion_hasta, promocion_tipo_descuento, promocion_descuento } = this.state
         const { minimo_inventario, maximo_inventario } = this.state
         
@@ -341,7 +344,7 @@ class CrearProductos extends React.Component {
                     <TabContainer dir={theme.direction}>
                         <InformacionBasica 
                             onChange={this.changeStep1.bind(this)}
-                            {...{nombre, descripcion, linea, marca, codigo, palabrasclave, isBox, cantidad_unidades, errorMessage, isPromocion, promocion_desde, promocion_hasta, promocion_tipo_descuento, promocion_descuento, minimo_inventario, maximo_inventario}} />
+                            {...{nombre, descripcion, linea, marca, codigo, codigo_producto, palabrasclave, isBox, cantidad_unidades, errorMessage, isPromocion, promocion_desde, promocion_hasta, promocion_tipo_descuento, promocion_descuento, minimo_inventario, maximo_inventario}} />
                     </TabContainer>
                     <TabContainer dir={theme.direction}>
                         <Fotos 

@@ -68,6 +68,7 @@ class InformacionBasica extends React.Component {
         nombre : '',
         descripcion : '',
         codigo : '',
+        codigo_producto: '',
         cantidad_unidades : 0,
         lineas : [],
         marcas : [],
@@ -108,6 +109,7 @@ class InformacionBasica extends React.Component {
             nombre : props.nombre,
             descripcion : props.descripcion,
             codigo : props.codigo,
+            codigo_producto: props.codigo_producto,
             isBox : props.isBox,
             palabrasclave : props.palabrasclave,
             errorMessage : props.errorMessage,
@@ -141,6 +143,7 @@ class InformacionBasica extends React.Component {
                 linea : this.state.linea,
                 marca : this.state.marca,
                 codigo : this.state.codigo,
+                codigo_producto : this.state.codigo_producto,
                 isBox : this.state.isBox,
                 palabrasclave : this.state.palabrasclave,
                 cantidad_unidades : this.state.cantidad_unidades,
@@ -186,7 +189,7 @@ class InformacionBasica extends React.Component {
     }
 
     render(){
-        const { errorMessage, nombre, descripcion, linea, marca, palabrasclave, _palabraclave, codigo, isBox, cantidad_unidades, isPromocion, promocion_desde, promocion_hasta, promocion_descuento, promocion_tipo_descuento } = this.state
+        const { errorMessage, nombre, descripcion, linea, marca, palabrasclave, _palabraclave, codigo, codigo_producto, isBox, cantidad_unidades, isPromocion, promocion_desde, promocion_hasta, promocion_descuento, promocion_tipo_descuento } = this.state
         const { minimo_inventario, maximo_inventario } = this.state
         const { classes } = this.props
         return (
@@ -255,7 +258,20 @@ class InformacionBasica extends React.Component {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} md={4} className={styles.paper}></Grid>
+                    <Grid item xs={12} md={4} className={styles.paper}>
+                        <TextField
+                            label="Código producto"
+                            className={styles.textField}
+                            value={codigo_producto}
+                            onChange={this.handleChange('codigo_producto')}
+                            fullWidth
+                            error={errorMessage !== ''}
+                            helperText={errorMessage}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        />
+                    </Grid>
                     <Grid item xs={12} md={4} className={styles.paper}>
                         <TextField 
                             label="Máximo inventario"

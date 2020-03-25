@@ -13,6 +13,9 @@ module.exports = {
     ADD_SALE : `${HOST}/ventas/save`,
     LIST_SELL : `${HOST}/ventas/list`,
     SELL_ONE : `${HOST}/ventas/one`,
+
+    QUOTATIONS : `${HOST}/ventas/cotizaciones`,
+    QUOTATION_ONE : `${HOST}/ventas/cotizacionOne`,
     COTIZAR : `${HOST}/ventas/saveCotizacion`,
 
     LIST_LINEAS : `${HOST}/lineas/list`,
